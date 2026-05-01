@@ -62,7 +62,7 @@
         
         <div class="video-wrapper">
             <iframe 
-                src="https://www.youtube.com/embed/VIDEO_ID_HERE?autoplay=1&mute=1&loop=1&playlist=VIDEO_ID_HERE" 
+                src="https://www.youtube.com/embed/[VIDEO_ID_HERE](https://youtu.be/Q1FSCSyFJ7U)?autoplay=1&mute=1&loop=1&playlist=VIDEO_ID_HERE" 
                 frameborder="0" 
                 allow="autoplay; encrypted-media" 
                 allowfullscreen>
