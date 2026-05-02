@@ -3,40 +3,70 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Portal</title>
+    <title>My Project</title>
     <style>
+        /* Removes all margins and scrollbars */
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body, html { width: 100%; height: 100%; overflow: hidden; background-color: black; }
+        body, html { 
+            width: 100%; 
+            height: 100%; 
+            overflow: hidden; 
+            background-color: black; 
+            cursor: pointer; /* Shows the user they can click anywhere */
+        }
+
+        /* Makes the video full-screen and high quality */
         #bg-video {
             position: fixed;
-            top: 0;
-            left: 0;
-            width: 100vw;
-            height: 100vh;
-            object-fit: cover; 
-            z-index: -1;
+            top: 50%;
+            left: 50%;
+            min-width: 100%;
+            min-height: 100%;
+            width: auto;
+            height: auto;
+            transform: translate(-50%, -50%);
+            object-fit: cover;
+            z-index: 1;
+        }
+
+        /* Hidden text that only shows if the video fails */
+        .fallback {
+            color: white;
+            text-align: center;
+            padding-top: 20%;
+            font-family: sans-serif;
+            z-index: 0;
         }
     </style>
 </head>
 <body>
 
-    <video id="bg-video" autoplay muted loop playsinline>
+    <video id="bg-video" loop playsinline muted preload="auto">
         <source src="video.mp4" type="video/mp4">
     </video>
 
+    <div class="fallback">Click anywhere to start the video.</div>
+
     <script>
-        // This is a "Safety Kickstart" for the video
-        var video = document.getElementById("bg-video");
-        
-        // Try to play the video immediately
-        video.play().catch(function(error) {
-            console.log("Autoplay was prevented. Waiting for a click.");
-            
-            // If the browser blocks it, play it as soon as the user clicks anywhere
-            document.body.addEventListener('click', function() {
-                video.play();
-            }, { once: true });
+        const video = document.getElementById('bg-video');
+
+        // FUNCTION TO START VIDEO
+        function playVid() {
+            video.play();
+            // Remove the fallback text once playing
+            document.querySelector('.fallback').style.display = 'none';
+        }
+
+        // 1. Try to autoplay immediately
+        window.addEventListener('load', () => {
+            video.play().catch(() => {
+                console.log("Autoplay blocked - waiting for click.");
+            });
         });
+
+        // 2. The "Start" Trigger: Click anywhere on the screen to play
+        document.body.addEventListener('click', playVid);
+        document.body.addEventListener('touchstart', playVid);
     </script>
 
 </body>
