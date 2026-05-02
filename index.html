@@ -43,6 +43,7 @@ body{
     align-items:center;
     background:rgba(0,0,0,0.88);
     z-index:9999;
+
     opacity:0;
     animation:fadeIn 0.35s ease forwards;
 }
@@ -117,13 +118,13 @@ body{
     cursor:pointer;
 }
 
-/* 🎬 BEHANCE CINEMATIC */
+/* 🎬 VIDEO */
 #video{
     position:fixed;
     inset:0;
     width:100%;
     height:100%;
-    border:none;
+    object-fit:cover;
     display:none;
     z-index:500;
     background:black;
@@ -233,7 +234,7 @@ body{
     filter: drop-shadow(0 0 8px rgba(124,247,255,0.4));
 }
 
-/* CANVAS */
+/* BACKGROUND */
 #space{
     position:fixed;
     inset:0;
@@ -265,12 +266,10 @@ body{
     <div id="enter">ENTER SYSTEM</div>
 </div>
 
-<!-- 🎬 BEHANCE EMBED -->
-<iframe
-    id="video"
-    src="https://www.behance.net/embed/project/120956023?ilo0=1"
-    allowfullscreen>
-</iframe>
+<!-- 🎬 MP4 VIDEO -->
+<video id="video" muted playsinline>
+    <source src="video.mp4" type="video/mp4">
+</video>
 
 <!-- DESKTOP -->
 <div id="desktop">
@@ -319,17 +318,22 @@ function accept(){
     document.getElementById("boot").style.display="flex";
 }
 
-/* ENTER SYSTEM */
+/* ENTER */
 document.getElementById("enter").onclick=()=>{
     boot.style.opacity="0";
+
     setTimeout(()=>{
         boot.style.display="none";
         desktop.style.opacity="1";
-        video.style.display="block";
+
+        let v=document.getElementById("video");
+        v.style.display="block";
+        v.play();
+
     },700);
 };
 
-/* UI TEXT */
+/* TEXT */
 quote.innerText="Orbit beyond limits.";
 sysStatus.innerText="ONLINE";
 signal.innerText="CLEAR";
