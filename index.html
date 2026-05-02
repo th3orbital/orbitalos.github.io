@@ -113,16 +113,9 @@ body{
     font-size:9rem;
     font-weight:100;
     letter-spacing:-6px;
-    color:white;
 }
 
-/* ---------- DESKTOP AREA ---------- */
-#desktopArea{
-    position:absolute;
-    inset:0;
-}
-
-/* ---------- DOCK (clean, minimal) ---------- */
+/* ---------- DOCK ---------- */
 #dock{
     position:absolute;
     bottom:18px;
@@ -136,20 +129,58 @@ body{
     border:1px solid var(--red-soft);
 }
 
-/* ---------- APP ICONS ---------- */
-.app{
-    width:70px;
-    height:70px;
-    border-radius:18px;
+.dock-app{
+    width:60px;
+    height:60px;
     display:flex;
     align-items:center;
     justify-content:center;
-    cursor:grab;
-    position:absolute;
-    transition:0.2s;
+    border-radius:14px;
+    cursor:pointer;
 }
 
-.app svg{
+.dock-app svg{
+    width:24px;
+    height:24px;
+    stroke:var(--red);
+    fill:none;
+    stroke-width:1.6;
+}
+
+/* ---------- APP GRID (fixed positions) ---------- */
+.app{
+    position:absolute;
+    width:90px;
+    height:90px;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    gap:6px;
+    opacity:0;
+    transform:scale(0.8);
+    animation:spawn .25s forwards;
+}
+
+@keyframes spawn{
+    to{
+        opacity:1;
+        transform:scale(1);
+    }
+}
+
+.icon{
+    width:70px;
+    height:70px;
+    border-radius:18px;
+    background:rgba(255,255,255,0.03);
+    border:1px solid var(--red-soft);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+}
+
+.icon svg{
     width:28px;
     height:28px;
     stroke:var(--red);
@@ -157,29 +188,11 @@ body{
     stroke-width:1.6;
 }
 
-/* dock version */
-.dock-app{
-    position:relative;
-    width:60px;
-    height:60px;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    border-radius:14px;
-    border:1px solid var(--red-soft);
-}
-
-.dock-app svg{
-    width:24px;
-    height:24px;
-}
-
-/* drag */
-.dragging{
+.label{
+    font-size:10px;
+    letter-spacing:2px;
     opacity:0.6;
-    transform:scale(1.1);
 }
-
 </style>
 </head>
 
@@ -208,27 +221,27 @@ body{
 
     <div id="time">0:00</div>
 
-    <!-- desktop drop zone -->
-    <div id="desktopArea"></div>
+    <!-- APPS WILL APPEAR HERE -->
+    <div id="apps"></div>
 
     <!-- DOCK -->
     <div id="dock">
 
-        <div class="dock-app" data-app="arcade">
+        <div class="dock-app" onclick="openApp('arcade')">
             <svg viewBox="0 0 24 24">
                 <rect x="4" y="6" width="16" height="12" rx="2"/>
                 <path d="M8 10h.01M16 10h.01M9 14h6"/>
             </svg>
         </div>
 
-        <div class="dock-app" data-app="net">
+        <div class="dock-app" onclick="openApp('net')">
             <svg viewBox="0 0 24 24">
                 <circle cx="12" cy="12" r="9"/>
                 <path d="M3 12h18M12 3c3 4 3 14 0 18"/>
             </svg>
         </div>
 
-        <div class="dock-app" data-app="system">
+        <div class="dock-app" onclick="openApp('system')">
             <svg viewBox="0 0 24 24">
                 <path d="M12 2l3 6 7 .5-5 4 1.5 7L12 16l-6.5 3.5L7 12.5 2 8.5 9 8z"/>
             </svg>
@@ -240,11 +253,9 @@ body{
 
 <script>
 
-let z = 10;
-
-/* DOUBLE CLICK ENTER */
-let clicks = 0;
-document.getElementById("enter").onclick = () => {
+/* BOOT */
+let clicks=0;
+document.getElementById("enter").onclick=()=>{
     clicks++;
     setTimeout(()=>clicks=0,400);
     if(clicks===2) start();
@@ -276,60 +287,42 @@ document.getElementById("video").onended=()=>{
     document.getElementById("desktop").style.opacity="1";
 };
 
-/* ---------- DRAG SYSTEM ---------- */
-function makeDraggable(el){
-    let offsetX, offsetY, dragging=false;
+/* APPS SPAWN POSITIONS */
+function openApp(type){
+    const container=document.getElementById("apps");
 
-    el.addEventListener("mousedown",(e)=>{
-        dragging=true;
-        el.classList.add("dragging");
+    const app=document.createElement("div");
+    app.className="app";
 
-        offsetX=e.offsetX;
-        offsetY=e.offsetY;
+    let icon="";
 
-        el.style.zIndex=++z;
-    });
+    if(type==="arcade"){
+        app.style.left="120px";
+        app.style.top="160px";
+        icon=`<rect x="4" y="6" width="16" height="12" rx="2"/><path d="M8 10h.01M16 10h.01M9 14h6"/>`;
+    }
 
-    document.addEventListener("mousemove",(e)=>{
-        if(!dragging) return;
+    if(type==="net"){
+        app.style.left="260px";
+        app.style.top="160px";
+        icon=`<circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c3 4 3 14 0 18"/>`;
+    }
 
-        el.style.left=(e.clientX-offsetX)+"px";
-        el.style.top=(e.clientY-offsetY)+"px";
-    });
+    if(type==="system"){
+        app.style.left="400px";
+        app.style.top="160px";
+        icon=`<path d="M12 2l3 6 7 .5-5 4 1.5 7L12 16l-6.5 3.5L7 12.5 2 8.5 9 8z"/>`;
+    }
 
-    document.addEventListener("mouseup",()=>{
-        dragging=false;
-        el.classList.remove("dragging");
-    });
+    app.innerHTML=`
+        <div class="icon">
+            <svg viewBox="0 0 24 24">${icon}</svg>
+        </div>
+        <div class="label">${type.toUpperCase()}</div>
+    `;
+
+    container.appendChild(app);
 }
-
-/* CREATE APP FROM DOCK */
-document.querySelectorAll(".dock-app").forEach(d=>{
-    d.addEventListener("dblclick",()=>{
-        const type=d.dataset.app;
-
-        const app=document.createElement("div");
-        app.className="app";
-
-        app.style.left="200px";
-        app.style.top="200px";
-
-        if(type==="arcade"){
-            app.innerHTML=`<svg viewBox="0 0 24 24"><rect x="4" y="6" width="16" height="12" rx="2"/><path d="M8 10h.01M16 10h.01M9 14h6"/></svg>`;
-        }
-
-        if(type==="net"){
-            app.innerHTML=`<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c3 4 3 14 0 18"/></svg>`;
-        }
-
-        if(type==="system"){
-            app.innerHTML=`<svg viewBox="0 0 24 24"><path d="M12 2l3 6 7 .5-5 4 1.5 7L12 16l-6.5 3.5L7 12.5 2 8.5 9 8z"/></svg>`;
-        }
-
-        document.getElementById("desktopArea").appendChild(app);
-        makeDraggable(app);
-    });
-});
 
 /* CLOCK */
 function tick(){
