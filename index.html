@@ -5,64 +5,101 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Orbital OS</title>
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body, html { 
-            width: 100%; height: 100%; 
-            overflow: hidden; background: black; 
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        :root {
+            --glass: rgba(255, 255, 255, 0.15);
+            --border: rgba(255, 255, 255, 0.2);
+            --text: #ffffff;
         }
 
-        /* 1. Splash Screen */
+        * { margin: 0; padding: 0; box-sizing: border-box; outline: none; }
+        
+        body, html { 
+            width: 100%; height: 100%; 
+            overflow: hidden; background: #000; 
+            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Helvetica Neue", Arial, sans-serif;
+            color: var(--text);
+        }
+
+        /* 1. Elegant Splash Screen */
         #splash {
             position: fixed; z-index: 100;
             width: 100%; height: 100%;
             display: flex; flex-direction: column;
             justify-content: center; align-items: center;
-            background: black; transition: opacity 0.8s;
-        }
-        #splash h1 { color: white; letter-spacing: 5px; margin-bottom: 20px; font-weight: 200; }
-        #splash button { 
-            padding: 12px 30px; background: white; border: none; 
-            border-radius: 20px; cursor: pointer; font-weight: 600;
+            background: radial-gradient(circle, #1a1a1a 0%, #000 100%);
+            transition: all 1s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
-        /* 2. Intro Video */
+        #splash h1 { 
+            font-weight: 200; font-size: 3.5rem; letter-spacing: 15px; 
+            margin-bottom: 40px; opacity: 0.8;
+        }
+
+        #splash button { 
+            padding: 14px 40px; background: none; border: 1px solid var(--border);
+            color: white; border-radius: 30px; cursor: pointer; font-weight: 300;
+            letter-spacing: 2px; transition: 0.4s; backdrop-filter: blur(5px);
+        }
+
+        #splash button:hover { 
+            background: white; color: black; transform: scale(1.05);
+            box-shadow: 0 0 30px rgba(255,255,255,0.2);
+        }
+
+        /* 2. Intro Video Styling */
         #intro-vid {
             position: fixed; top: 0; left: 0;
             width: 100vw; height: 100vh;
             object-fit: cover; display: none; z-index: 50;
         }
 
-        /* 3. Apple Style Home Screen */
+        /* 3. High-End Home Screen */
         #home-screen {
             position: fixed; top: 0; left: 0;
             width: 100%; height: 100%;
-            background: linear-gradient(135deg, #83a4d4, #b6fbff); /* Classic Apple-style gradient */
+            /* Modern Apple-style dynamic wallpaper gradient */
+            background: linear-gradient(150deg, #2b5876 0%, #4e4376 100%);
             display: flex; flex-direction: column;
             align-items: center; opacity: 0; z-index: 10;
-            transition: opacity 1.5s ease-in;
+            transition: opacity 2s ease;
         }
 
-        #home-screen h2 { margin-top: 100px; color: white; font-size: 2.5rem; text-shadow: 0 2px 10px rgba(0,0,0,0.2); }
+        #home-screen h2 { 
+            margin-top: 12vh; font-weight: 300; font-size: 3rem;
+            text-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            animation: float 4s ease-in-out infinite;
+        }
 
-        /* The "Dock" at the bottom */
-        .dock {
-            position: absolute; bottom: 20px;
-            background: rgba(255, 255, 255, 0.2);
-            backdrop-filter: blur(15px);
-            padding: 10px 20px; border-radius: 20px;
-            display: flex; gap: 20px;
-            border: 1px solid rgba(255,255,255,0.3);
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        /* The Apple-style Dock */
+        .dock-container {
+            position: absolute; bottom: 30px;
+            padding: 10px; border-radius: 24px;
+            background: var(--glass);
+            backdrop-filter: blur(25px) saturate(180%);
+            border: 1px solid var(--border);
+            display: flex; gap: 15px;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.3);
         }
 
         .icon {
-            width: 50px; height: 50px;
-            background: white; border-radius: 12px;
+            width: 60px; height: 60px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 15px;
             display: flex; justify-content: center; align-items: center;
-            font-size: 1.5rem; cursor: pointer; transition: 0.2s;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            font-size: 1.8rem; cursor: pointer; transition: 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            border: 1px solid rgba(255,255,255,0.1);
         }
-        .icon:hover { transform: translateY(-10px); }
+
+        .icon:hover { 
+            transform: scale(1.3) translateY(-15px); 
+            background: rgba(255,255,255,0.25);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+        }
 
     </style>
 </head>
@@ -70,7 +107,7 @@
 
     <div id="splash">
         <h1>ORBITAL</h1>
-        <button onclick="startSequence()">Enter</button>
+        <button onclick="startSequence()">BOOT SYSTEM</button>
     </div>
 
     <video id="intro-vid">
@@ -78,12 +115,13 @@
     </video>
 
     <div id="home-screen">
-        <h2>Welcome to Orbital</h2>
+        <h2>Orbital OS</h2>
         
-        <div class="dock">
-            <div class="icon">🎮</div>
-            <div class="icon">🌐</div>
-            <div class="icon">⚙️</div>
+        <div class="dock-container">
+            <div class="icon" title="Games">🎮</div>
+            <div class="icon" title="Browser">🌐</div>
+            <div class="icon" title="Apps">📱</div>
+            <div class="icon" title="Settings">⚙️</div>
         </div>
     </div>
 
@@ -93,25 +131,20 @@
         const home = document.getElementById('home-screen');
 
         function startSequence() {
-            // Hide splash, show and play video
             splash.style.opacity = "0";
-            setTimeout(() => { splash.style.display = "none"; }, 800);
-
-            video.style.display = "block";
-            video.muted = false;
-            video.play();
+            setTimeout(() => { 
+                splash.style.display = "none"; 
+                video.style.display = "block";
+                video.muted = false;
+                video.play();
+            }, 1000);
         }
 
-        // Detect when the video finishes
         video.onended = function() {
-            // Fade out video
-            video.style.transition = "opacity 1s";
+            video.style.transition = "opacity 1.5s";
             video.style.opacity = "0";
-            
-            // Show Home Screen
             home.style.opacity = "1";
-            
-            setTimeout(() => { video.style.display = "none"; }, 1000);
+            setTimeout(() => { video.style.display = "none"; }, 1500);
         };
     </script>
 </body>
