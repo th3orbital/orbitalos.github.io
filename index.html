@@ -51,7 +51,6 @@ body{
     border:1px solid var(--soft);
     font-size:12px;
     letter-spacing:3px;
-    color:rgba(255,255,255,0.6);
     cursor:pointer;
 }
 
@@ -75,7 +74,6 @@ body{
     transition:1s;
 }
 
-/* TOP BAR */
 .topbar{
     position:absolute;
     top:0;
@@ -90,7 +88,6 @@ body{
     font-size:12px;
 }
 
-/* CLOCK */
 #time{
     position:absolute;
     top:28%;
@@ -98,7 +95,6 @@ body{
     text-align:center;
     font-size:9rem;
     font-weight:100;
-    letter-spacing:-6px;
 }
 
 /* ---------- DOCK ---------- */
@@ -121,10 +117,30 @@ body{
     display:flex;
     align-items:center;
     justify-content:center;
+    border-radius:14px;
     cursor:pointer;
+    transition:0.25s;
 }
 
-/* ---------- PROXY (REDESIGNED UI) ---------- */
+.dock-app svg{
+    width:26px;
+    height:26px;
+    stroke:var(--red);
+    fill:none;
+    stroke-width:1.6;
+}
+
+.dock-app:hover{
+    transform:translateY(-6px) scale(1.1);
+    background:rgba(255,42,42,0.08);
+}
+
+.dock-app:hover svg{
+    stroke:#ff4d4d;
+    filter:drop-shadow(0 0 6px rgba(255,42,42,0.6));
+}
+
+/* ---------- PROXY ---------- */
 #proxyApp{
     position:fixed;
     inset:0;
@@ -141,18 +157,12 @@ body{
     padding:0 14px;
     border-bottom:1px solid var(--soft);
     font-size:12px;
-    letter-spacing:1px;
-}
-
-#proxyTop span{
-    color:var(--red);
 }
 
 #proxyBar{
     display:flex;
     gap:10px;
     padding:12px;
-    border-bottom:1px solid rgba(255,42,42,0.1);
 }
 
 #proxyBar input{
@@ -161,28 +171,20 @@ body{
     background:#050505;
     border:1px solid var(--soft);
     color:white;
-    outline:none;
-    font-size:12px;
 }
 
 #proxyBar button{
+    padding:10px 14px;
     background:#000;
     border:1px solid var(--soft);
     color:white;
-    padding:10px 14px;
     cursor:pointer;
-    transition:0.2s;
-}
-
-#proxyBar button:hover{
-    border-color:var(--red);
 }
 
 #proxyFrame{
     width:100%;
     height:calc(100% - 85px);
     border:none;
-    background:#000;
 }
 </style>
 </head>
@@ -192,7 +194,7 @@ body{
 <!-- BOOT -->
 <div id="boot">
     <h1>ORBITAL OS</h1>
-    <div id="enter">CLICK TO ENTER SYSTEM</div>
+    <div id="enter">CLICK TO ENTER</div>
 </div>
 
 <!-- VIDEO -->
@@ -202,7 +204,6 @@ body{
 
 <!-- DESKTOP -->
 <div id="desktop">
-
     <div class="topbar">
         <div>ORBITAL OS</div>
         <div id="nav"></div>
@@ -211,17 +212,33 @@ body{
     <div id="time">0:00</div>
 
     <div id="dock">
-        <div class="dock-app" onclick="openProxy()">🌐</div>
-    </div>
 
+        <!-- PROXY -->
+        <div class="dock-app" onclick="openProxy()">
+            <svg viewBox="0 0 24 24">
+                <circle cx="12" cy="12" r="9"/>
+                <path d="M3 12h18"/>
+                <path d="M12 3c3 4 3 14 0 18"/>
+            </svg>
+        </div>
+
+        <!-- ARCADE -->
+        <div class="dock-app" onclick="openArcade()">
+            <svg viewBox="0 0 24 24">
+                <rect x="3" y="7" width="18" height="10" rx="2"/>
+                <circle cx="9" cy="12" r="1.2"/>
+                <circle cx="15" cy="12" r="1.2"/>
+            </svg>
+        </div>
+
+    </div>
 </div>
 
 <!-- PROXY -->
 <div id="proxyApp">
-
     <div id="proxyTop">
-        <div><span>ORBITAL</span> PROXY</div>
-        <div onclick="closeProxy()" style="cursor:pointer;color:#ff2a2a;">EXIT</div>
+        <div style="color:#ff2a2a;">ORBITAL’S PROXY</div>
+        <div onclick="closeProxy()" style="cursor:pointer;">EXIT</div>
     </div>
 
     <div id="proxyBar">
@@ -230,55 +247,34 @@ body{
     </div>
 
     <iframe id="proxyFrame"></iframe>
-
 </div>
 
 <script>
 
-let videoStarted=false;
-let enterPress=0;
-
-/* SINGLE CLICK START */
+/* START */
 document.getElementById("enter").onclick=()=>{
-    startSystem();
+    document.getElementById("boot").style.display="none";
+    const v=document.getElementById("video");
+    v.style.display="block";
+    v.play();
 };
 
-function startSystem(){
-    if(videoStarted) return;
-    videoStarted=true;
+/* DOUBLE ENTER SKIP */
+let press=0;
+document.addEventListener("keydown",e=>{
+    if(e.key==="Enter"){
+        press++;
+        setTimeout(()=>press=0,400);
 
-    document.getElementById("boot").style.display="none";
-
-    const v=document.getElementById("video");
-
-    v.style.display="block";
-    v.muted=true;   // FIX: no audio issue
-    v.play();
-}
-
-/* DOUBLE ENTER SKIP VIDEO */
-document.addEventListener("keydown",(e)=>{
-    if(e.key==="Enter" && videoStarted){
-        enterPress++;
-
-        setTimeout(()=>enterPress=0,500);
-
-        if(enterPress===2){
-            skipVideo();
+        if(press===2){
+            const v=document.getElementById("video");
+            v.pause();
+            v.src="";
+            v.style.display="none";
+            document.getElementById("desktop").style.opacity="1";
         }
     }
 });
-
-function skipVideo(){
-    const v=document.getElementById("video");
-
-    v.pause();
-    v.removeAttribute("src");
-    v.load();
-
-    v.style.display="none";
-    document.getElementById("desktop").style.opacity="1";
-}
 
 /* END VIDEO */
 document.getElementById("video").onended=()=>{
@@ -286,23 +282,20 @@ document.getElementById("video").onended=()=>{
     document.getElementById("desktop").style.opacity="1";
 };
 
-/* PROXY OPEN */
+/* PROXY */
 function openProxy(){
     document.getElementById("proxyApp").style.display="block";
     document.getElementById("desktop").style.opacity="0";
-
     document.getElementById("proxyFrame").src="https://www.google.com";
 }
 
-/* CLOSE */
 function closeProxy(){
     document.getElementById("proxyApp").style.display="none";
     document.getElementById("desktop").style.opacity="1";
 }
 
-/* GOOGLE + URL HANDLER */
 function goProxy(){
-    let q=document.getElementById("proxyUrl").value.trim();
+    let q=document.getElementById("proxyUrl").value;
     let frame=document.getElementById("proxyFrame");
 
     if(!q){
@@ -322,13 +315,16 @@ function tick(){
     let d=new Date();
     let h=d.getHours()%12||12;
     let m=d.getMinutes().toString().padStart(2,"0");
-
     document.getElementById("time").innerText=`${h}:${m}`;
     document.getElementById("nav").innerText=`${h}:${m}`;
 }
-
 setInterval(tick,1000);
 tick();
+
+/* ARCADE */
+function openArcade(){
+    alert("Arcade coming soon");
+}
 
 </script>
 
