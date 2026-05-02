@@ -6,12 +6,12 @@
 <title>Orbital OS</title>
 
 <style>
-:root {
+:root{
     --red:#ff2a2a;
     --red-soft:rgba(255,42,42,0.25);
 }
 
-* {
+*{
     margin:0;
     padding:0;
     box-sizing:border-box;
@@ -19,7 +19,7 @@
     user-select:none;
 }
 
-body {
+body{
     height:100vh;
     overflow:hidden;
     background:#000;
@@ -27,7 +27,7 @@ body {
 }
 
 /* ---------- BOOT ---------- */
-#boot {
+#boot{
     position:fixed;
     inset:0;
     background:#000;
@@ -38,7 +38,7 @@ body {
     z-index:1000;
 }
 
-#boot h1 {
+#boot h1{
     font-weight:100;
     letter-spacing:30px;
     font-size:3rem;
@@ -46,17 +46,18 @@ body {
     text-shadow:0 0 25px rgba(255,42,42,0.25);
 }
 
-#enterArea {
+#enter{
     margin-top:40px;
-    padding:18px 40px;
+    padding:16px 40px;
     border:1px solid var(--red-soft);
-    letter-spacing:4px;
+    letter-spacing:3px;
     font-size:12px;
     color:rgba(255,255,255,0.6);
+    cursor:default;
 }
 
 /* ---------- VIDEO ---------- */
-#video {
+#video{
     position:fixed;
     inset:0;
     width:100%;
@@ -67,21 +68,21 @@ body {
     filter:grayscale(100%) contrast(1.2);
 }
 
-/* SKIP */
-#skip {
+#skip{
     position:fixed;
-    top:15px;
-    right:15px;
+    top:12px;
+    right:12px;
     z-index:600;
-    padding:8px 14px;
+    display:none;
+    padding:8px 12px;
+    font-size:12px;
     background:rgba(0,0,0,0.6);
     border:1px solid var(--red-soft);
-    font-size:12px;
-    display:none;
+    color:white;
 }
 
 /* ---------- DESKTOP ---------- */
-#desktop {
+#desktop{
     position:fixed;
     inset:0;
     opacity:0;
@@ -89,7 +90,7 @@ body {
 }
 
 /* TOP BAR */
-.topbar {
+.topbar{
     position:absolute;
     top:0;
     width:100%;
@@ -97,119 +98,88 @@ body {
     display:flex;
     justify-content:space-between;
     align-items:center;
-    padding:0 14px;
+    padding:0 12px;
     background:rgba(0,0,0,0.75);
     border-bottom:1px solid var(--red-soft);
     font-size:12px;
 }
 
 /* CLOCK */
-.center {
+#time{
     position:absolute;
-    top:32%;
+    top:30%;
     width:100%;
     text-align:center;
-}
-
-#time {
-    font-size:10rem;
+    font-size:9rem;
     font-weight:100;
     letter-spacing:-6px;
-    text-shadow:0 0 25px rgba(255,42,42,0.15);
+    color:white;
 }
 
-/* ---------- HOTBAR ---------- */
-.hotbar {
+/* ---------- DESKTOP AREA ---------- */
+#desktopArea{
+    position:absolute;
+    inset:0;
+}
+
+/* ---------- DOCK (clean, minimal) ---------- */
+#dock{
     position:absolute;
     bottom:18px;
     left:50%;
     transform:translateX(-50%);
     display:flex;
-    gap:16px;
-    padding:14px 18px;
-    border-radius:26px;
-    background:rgba(0,0,0,0.75);
+    gap:12px;
+    padding:10px 14px;
+    border-radius:18px;
+    background:rgba(0,0,0,0.7);
     border:1px solid var(--red-soft);
-    backdrop-filter:blur(40px);
 }
 
-/* ICON WRAPPER */
-.app {
+/* ---------- APP ICONS ---------- */
+.app{
     width:70px;
     height:70px;
     border-radius:18px;
     display:flex;
     align-items:center;
     justify-content:center;
-    position:relative;
-    cursor:pointer;
-
-    animation:popIn .6s ease forwards;
-    opacity:0;
+    cursor:grab;
+    position:absolute;
+    transition:0.2s;
 }
 
-/* stagger animation */
-.app:nth-child(1){animation-delay:.1s;}
-.app:nth-child(2){animation-delay:.2s;}
-.app:nth-child(3){animation-delay:.3s;}
-
-/* ICON */
-.icon {
-    width:54px;
-    height:54px;
-    border-radius:14px;
-    background:rgba(255,255,255,0.03);
-    border:1px solid var(--red-soft);
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    transition:.25s;
-}
-
-/* SVG */
-.icon svg {
-    width:26px;
-    height:26px;
+.app svg{
+    width:28px;
+    height:28px;
     stroke:var(--red);
     fill:none;
     stroke-width:1.6;
 }
 
-/* HOVER ANIMATION */
-.app:hover {
-    transform:translateY(-10px) scale(1.1);
+/* dock version */
+.dock-app{
+    position:relative;
+    width:60px;
+    height:60px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    border-radius:14px;
+    border:1px solid var(--red-soft);
 }
 
-.app:hover .icon {
-    border-color:var(--red);
-    box-shadow:0 0 25px rgba(255,42,42,0.3);
+.dock-app svg{
+    width:24px;
+    height:24px;
 }
 
-/* CLICK ANIMATION */
-.app:active {
-    transform:scale(0.95);
+/* drag */
+.dragging{
+    opacity:0.6;
+    transform:scale(1.1);
 }
 
-/* LABEL */
-.label {
-    position:absolute;
-    bottom:-18px;
-    font-size:10px;
-    letter-spacing:2px;
-    color:rgba(255,255,255,0.5);
-}
-
-/* POP IN ANIMATION */
-@keyframes popIn {
-    from {
-        transform:translateY(20px) scale(0.8);
-        opacity:0;
-    }
-    to {
-        transform:translateY(0) scale(1);
-        opacity:1;
-    }
-}
 </style>
 </head>
 
@@ -218,7 +188,7 @@ body {
 <!-- BOOT -->
 <div id="boot">
     <h1>ORBITAL OS</h1>
-    <div id="enterArea">DOUBLE CLICK TO ENTER SYSTEM</div>
+    <div id="enter">DOUBLE CLICK TO ENTER SYSTEM</div>
 </div>
 
 <!-- VIDEO -->
@@ -226,7 +196,7 @@ body {
     <source src="video.mp4" type="video/mp4">
 </video>
 
-<button id="skip" onclick="skipVideo()">SKIP</button>
+<button id="skip" onclick="skip()">SKIP</button>
 
 <!-- DESKTOP -->
 <div id="desktop">
@@ -236,40 +206,32 @@ body {
         <div id="nav"></div>
     </div>
 
-    <div class="center">
-        <div id="time">0:00</div>
-    </div>
+    <div id="time">0:00</div>
 
-    <!-- HOTBAR -->
-    <div class="hotbar">
+    <!-- desktop drop zone -->
+    <div id="desktopArea"></div>
 
-        <div class="app">
-            <div class="icon">
-                <svg viewBox="0 0 24 24">
-                    <rect x="4" y="6" width="16" height="12" rx="2"/>
-                    <path d="M8 10h.01M16 10h.01M9 14h6"/>
-                </svg>
-            </div>
-            <div class="label">ARCADE</div>
+    <!-- DOCK -->
+    <div id="dock">
+
+        <div class="dock-app" data-app="arcade">
+            <svg viewBox="0 0 24 24">
+                <rect x="4" y="6" width="16" height="12" rx="2"/>
+                <path d="M8 10h.01M16 10h.01M9 14h6"/>
+            </svg>
         </div>
 
-        <div class="app">
-            <div class="icon">
-                <svg viewBox="0 0 24 24">
-                    <circle cx="12" cy="12" r="9"/>
-                    <path d="M3 12h18M12 3c3 4 3 14 0 18"/>
-                </svg>
-            </div>
-            <div class="label">NET</div>
+        <div class="dock-app" data-app="net">
+            <svg viewBox="0 0 24 24">
+                <circle cx="12" cy="12" r="9"/>
+                <path d="M3 12h18M12 3c3 4 3 14 0 18"/>
+            </svg>
         </div>
 
-        <div class="app">
-            <div class="icon">
-                <svg viewBox="0 0 24 24">
-                    <path d="M12 2l3 6 7 .5-5 4 1.5 7L12 16l-6.5 3.5L7 12.5 2 8.5 9 8z"/>
-                </svg>
-            </div>
-            <div class="label">SYSTEM</div>
+        <div class="dock-app" data-app="system">
+            <svg viewBox="0 0 24 24">
+                <path d="M12 2l3 6 7 .5-5 4 1.5 7L12 16l-6.5 3.5L7 12.5 2 8.5 9 8z"/>
+            </svg>
         </div>
 
     </div>
@@ -278,53 +240,106 @@ body {
 
 <script>
 
+let z = 10;
+
 /* DOUBLE CLICK ENTER */
 let clicks = 0;
-document.getElementById("enterArea").onclick = () => {
+document.getElementById("enter").onclick = () => {
     clicks++;
-    setTimeout(() => clicks = 0, 400);
-
-    if(clicks === 2) start();
+    setTimeout(()=>clicks=0,400);
+    if(clicks===2) start();
 };
 
-function start() {
-    document.getElementById("boot").style.display = "none";
+function start(){
+    document.getElementById("boot").style.display="none";
 
-    const v = document.getElementById("video");
-    const skip = document.getElementById("skip");
+    const v=document.getElementById("video");
+    const skip=document.getElementById("skip");
 
-    v.style.display = "block";
-    skip.style.display = "block";
+    v.style.display="block";
+    skip.style.display="block";
 
     v.play();
 }
 
 /* SKIP */
-function skipVideo() {
-    const v = document.getElementById("video");
-
-    v.pause();
-    v.style.display = "none";
-    document.getElementById("skip").style.display = "none";
-    document.getElementById("desktop").style.opacity = "1";
+function skip(){
+    document.getElementById("video").style.display="none";
+    document.getElementById("skip").style.display="none";
+    document.getElementById("desktop").style.opacity="1";
 }
 
 /* END VIDEO */
-document.getElementById("video").onended = () => {
-    document.getElementById("video").style.display = "none";
-    document.getElementById("skip").style.display = "none";
-    document.getElementById("desktop").style.opacity = "1";
+document.getElementById("video").onended=()=>{
+    document.getElementById("video").style.display="none";
+    document.getElementById("skip").style.display="none";
+    document.getElementById("desktop").style.opacity="1";
 };
 
-/* CLOCK */
-function tick() {
-    const now = new Date();
-    let h = now.getHours();
-    const m = now.getMinutes().toString().padStart(2,"0");
-    h = h % 12 || 12;
+/* ---------- DRAG SYSTEM ---------- */
+function makeDraggable(el){
+    let offsetX, offsetY, dragging=false;
 
-    document.getElementById("time").innerText = `${h}:${m}`;
-    document.getElementById("nav").innerText = `${h}:${m}`;
+    el.addEventListener("mousedown",(e)=>{
+        dragging=true;
+        el.classList.add("dragging");
+
+        offsetX=e.offsetX;
+        offsetY=e.offsetY;
+
+        el.style.zIndex=++z;
+    });
+
+    document.addEventListener("mousemove",(e)=>{
+        if(!dragging) return;
+
+        el.style.left=(e.clientX-offsetX)+"px";
+        el.style.top=(e.clientY-offsetY)+"px";
+    });
+
+    document.addEventListener("mouseup",()=>{
+        dragging=false;
+        el.classList.remove("dragging");
+    });
+}
+
+/* CREATE APP FROM DOCK */
+document.querySelectorAll(".dock-app").forEach(d=>{
+    d.addEventListener("dblclick",()=>{
+        const type=d.dataset.app;
+
+        const app=document.createElement("div");
+        app.className="app";
+
+        app.style.left="200px";
+        app.style.top="200px";
+
+        if(type==="arcade"){
+            app.innerHTML=`<svg viewBox="0 0 24 24"><rect x="4" y="6" width="16" height="12" rx="2"/><path d="M8 10h.01M16 10h.01M9 14h6"/></svg>`;
+        }
+
+        if(type==="net"){
+            app.innerHTML=`<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c3 4 3 14 0 18"/></svg>`;
+        }
+
+        if(type==="system"){
+            app.innerHTML=`<svg viewBox="0 0 24 24"><path d="M12 2l3 6 7 .5-5 4 1.5 7L12 16l-6.5 3.5L7 12.5 2 8.5 9 8z"/></svg>`;
+        }
+
+        document.getElementById("desktopArea").appendChild(app);
+        makeDraggable(app);
+    });
+});
+
+/* CLOCK */
+function tick(){
+    const now=new Date();
+    let h=now.getHours();
+    const m=now.getMinutes().toString().padStart(2,"0");
+    h=h%12||12;
+
+    document.getElementById("time").innerText=`${h}:${m}`;
+    document.getElementById("nav").innerText=`${h}:${m}`;
 }
 
 setInterval(tick,1000);
