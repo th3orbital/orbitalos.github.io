@@ -1,4 +1,4 @@
-<<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -30,27 +30,27 @@ body{
 #boot{
     position:fixed;
     inset:0;
-    background:#000;
     display:flex;
     flex-direction:column;
     justify-content:center;
     align-items:center;
+    background:#000;
     z-index:1000;
 }
 
 #boot h1{
     font-weight:100;
-    letter-spacing:30px;
+    letter-spacing:28px;
     font-size:3rem;
     color:var(--red);
 }
 
 #enter{
     margin-top:40px;
-    padding:16px 40px;
+    padding:14px 40px;
     border:1px solid var(--red-soft);
-    letter-spacing:3px;
     font-size:12px;
+    letter-spacing:3px;
     color:rgba(255,255,255,0.6);
 }
 
@@ -70,13 +70,13 @@ body{
     position:fixed;
     top:12px;
     right:12px;
-    z-index:600;
     display:none;
+    z-index:600;
     padding:8px 12px;
-    font-size:12px;
-    background:rgba(0,0,0,0.6);
+    background:#000;
     border:1px solid var(--red-soft);
     color:white;
+    font-size:12px;
 }
 
 /* ---------- DESKTOP ---------- */
@@ -97,7 +97,7 @@ body{
     justify-content:space-between;
     align-items:center;
     padding:0 12px;
-    background:rgba(0,0,0,0.75);
+    background:rgba(0,0,0,0.8);
     border-bottom:1px solid var(--red-soft);
     font-size:12px;
 }
@@ -105,7 +105,7 @@ body{
 /* CLOCK */
 #time{
     position:absolute;
-    top:30%;
+    top:28%;
     width:100%;
     text-align:center;
     font-size:9rem;
@@ -113,21 +113,18 @@ body{
     letter-spacing:-6px;
 }
 
-/* ---------- APP WINDOW SYSTEM ---------- */
+/* ---------- WINDOWS ---------- */
 #apps{
     position:absolute;
     inset:0;
 }
 
-/* WINDOW */
 .window{
     position:absolute;
-    width:320px;
-    height:220px;
-    background:rgba(10,10,10,0.9);
+    width:420px;
+    height:280px;
+    background:rgba(10,10,10,0.95);
     border:1px solid var(--red-soft);
-    backdrop-filter:blur(20px);
-    box-shadow:0 20px 60px rgba(0,0,0,0.8);
     display:flex;
     flex-direction:column;
     animation:pop .2s ease;
@@ -138,9 +135,8 @@ body{
     to{transform:scale(1);opacity:1;}
 }
 
-/* WINDOW TOP BAR */
 .w-top{
-    height:28px;
+    height:30px;
     display:flex;
     justify-content:space-between;
     align-items:center;
@@ -149,21 +145,16 @@ body{
     font-size:11px;
 }
 
-/* CLOSE BUTTON */
 .close{
     cursor:pointer;
     color:var(--red);
 }
 
-/* CONTENT */
 .w-content{
     flex:1;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    color:rgba(255,255,255,0.6);
+    padding:10px;
     font-size:12px;
-    letter-spacing:2px;
+    color:rgba(255,255,255,0.7);
 }
 
 /* ---------- DOCK ---------- */
@@ -176,24 +167,17 @@ body{
     gap:12px;
     padding:10px 14px;
     border-radius:18px;
-    background:rgba(0,0,0,0.7);
+    background:rgba(0,0,0,0.75);
     border:1px solid var(--red-soft);
 }
 
-/* ICONS */
 .dock-app{
     width:60px;
     height:60px;
     display:flex;
     align-items:center;
     justify-content:center;
-    border-radius:14px;
     cursor:pointer;
-    transition:.2s;
-}
-
-.dock-app:hover{
-    transform:translateY(-6px) scale(1.1);
 }
 
 .dock-app svg{
@@ -202,6 +186,41 @@ body{
     stroke:var(--red);
     fill:none;
     stroke-width:1.6;
+}
+
+/* ---------- BROWSER UI ---------- */
+.browser-bar{
+    display:flex;
+    gap:6px;
+    margin-bottom:10px;
+}
+
+.browser-bar input{
+    flex:1;
+    padding:6px;
+    background:#000;
+    border:1px solid var(--red-soft);
+    color:white;
+    font-size:11px;
+    outline:none;
+}
+
+.browser-bar button{
+    background:#000;
+    border:1px solid var(--red-soft);
+    color:white;
+    font-size:11px;
+    padding:6px 10px;
+    cursor:pointer;
+}
+
+.browser-view{
+    flex:1;
+    border:1px solid var(--red-soft);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    color:rgba(255,255,255,0.5);
 }
 </style>
 </head>
@@ -231,10 +250,9 @@ body{
 
     <div id="time">0:00</div>
 
-    <!-- WINDOWS -->
     <div id="apps"></div>
 
-    <!-- DOCK ONLY -->
+    <!-- DOCK -->
     <div id="dock">
 
         <div class="dock-app" onclick="openApp('Arcade')">
@@ -299,14 +317,31 @@ document.getElementById("video").onended=()=>{
     document.getElementById("desktop").style.opacity="1";
 };
 
-/* OPEN WINDOW */
+/* OPEN APPS */
 function openApp(name){
 
     const win=document.createElement("div");
     win.className="window";
-    win.style.left=(200+Math.random()*200)+"px";
+    win.style.left=(200+Math.random()*150)+"px";
     win.style.top=(120+Math.random()*120)+"px";
     win.style.zIndex=++z;
+
+    let content="";
+
+    if(name==="Net"){
+        content=`
+            <div class="browser-bar">
+                <input placeholder="Enter URL...">
+                <button>GO</button>
+            </div>
+            <div class="browser-view">
+                ORBITAL NET READY
+            </div>
+        `;
+    }
+    else{
+        content=`${name} APPLICATION LOADED`;
+    }
 
     win.innerHTML=`
         <div class="w-top">
@@ -314,7 +349,7 @@ function openApp(name){
             <div class="close" onclick="this.parentElement.parentElement.remove()">✕</div>
         </div>
         <div class="w-content">
-            ${name} APPLICATION
+            ${content}
         </div>
     `;
 
