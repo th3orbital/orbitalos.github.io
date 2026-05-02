@@ -18,6 +18,7 @@
     user-select:none;
 }
 
+/* 🌌 BACKGROUND */
 body{
     height:100vh;
     overflow:hidden;
@@ -27,11 +28,9 @@ body{
     radial-gradient(circle at 50% 40%, rgba(255,40,40,0.12), transparent 45%),
     url("https://images.unsplash.com/photo-1462331940025-496dfbfc7564?q=80&w=1920&auto=format&fit=crop")
     center/cover no-repeat fixed;
-
-    transition: background-position 0.2s ease-out;
 }
 
-/* STARS */
+/* stars */
 body::after{
     content:"";
     position:fixed;
@@ -144,7 +143,23 @@ body::after{
     cursor:pointer;
 }
 
-/* WINDOW SYSTEM */
+/* ICON STYLE */
+.dock-app svg{
+    width:28px;
+    height:28px;
+    stroke:var(--red);
+    fill:none;
+    stroke-width:1.4;
+    filter: drop-shadow(0 0 6px rgba(255,42,42,0.4));
+    transition:0.2s;
+}
+
+.dock-app:hover svg{
+    transform:scale(1.15);
+    filter: drop-shadow(0 0 14px rgba(255,42,42,0.8));
+}
+
+/* WINDOWS BASE */
 .window{
     width:100%;
     height:100%;
@@ -153,13 +168,13 @@ body::after{
     background:rgba(0,0,0,0.85);
     backdrop-filter: blur(18px);
 
-    transform: scale(0.85);
+    transform:scale(0.85);
     opacity:0;
     transition:0.25s ease;
 }
 
 .window.open{
-    transform: scale(1);
+    transform:scale(1);
     opacity:1;
 }
 
@@ -178,7 +193,7 @@ body::after{
     cursor:pointer;
 }
 
-/* PROXY */
+/* PROXY UI (UNCHANGED FUNCTIONALLY) */
 .windowBar{
     display:flex;
     gap:8px;
@@ -240,7 +255,7 @@ iframe{
     cursor:pointer;
 }
 
-/* CONTAINERS */
+/* APP CONTAINERS */
 #proxyApp, #settingsApp{
     position:fixed;
     inset:0;
@@ -274,14 +289,30 @@ iframe{
 
     <div id="time">0:00</div>
 
+    <!-- DOCK -->
     <div id="dock">
+
+        <!-- PROXY -->
         <div class="dock-app" onclick="openProxy()">
-            🌐
+            <svg viewBox="0 0 24 24">
+                <circle cx="12" cy="12" r="9"></circle>
+                <path d="M3 12h18"></path>
+                <path d="M12 3c3 4 3 14 0 18"></path>
+                <path d="M12 3c-3 4-3 14 0 18"></path>
+            </svg>
         </div>
 
+        <!-- SETTINGS -->
         <div class="dock-app" onclick="openSettings()">
-            ⚙️
+            <svg viewBox="0 0 24 24">
+                <path d="M12 15.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7z"></path>
+                <path d="M19 12h2"></path>
+                <path d="M3 12h2"></path>
+                <path d="M12 3v2"></path>
+                <path d="M12 19v2"></path>
+            </svg>
         </div>
+
     </div>
 </div>
 
@@ -346,17 +377,30 @@ document.getElementById("enter").onclick=()=>{
     },800);
 };
 
+/* VIDEO END */
 document.getElementById("video").onended=()=>{
     document.getElementById("video").style.display="none";
     document.getElementById("desktop").style.opacity="1";
 };
 
-/* BACKGROUND MOUSE MOVE */
+/* 🌌 SMOOTH MOUSE PARALLAX */
+let tx=0, ty=0, cx=0, cy=0;
+
 document.addEventListener("mousemove",(e)=>{
-    let mx=(e.clientX/window.innerWidth-0.5)*2;
-    let my=(e.clientY/window.innerHeight-0.5)*2;
-    document.body.style.backgroundPosition=`${50+mx*5}% ${50+my*5}%`;
+    tx=(e.clientX/window.innerWidth-0.5)*2;
+    ty=(e.clientY/window.innerHeight-0.5)*2;
 });
+
+function animateBG(){
+    cx+=(tx-cx)*0.08;
+    cy+=(ty-cy)*0.08;
+
+    document.body.style.backgroundPosition=
+        `${50+cx*6}% ${50+cy*6}%`;
+
+    requestAnimationFrame(animateBG);
+}
+animateBG();
 
 /* CLOCK */
 function tick(){
@@ -369,7 +413,7 @@ function tick(){
 setInterval(tick,1000);
 tick();
 
-/* PROXY OPEN ANIMATION */
+/* PROXY */
 function openProxy(){
     proxyApp.style.display="block";
     setTimeout(()=>proxyWindow.classList.add("open"),10);
@@ -388,7 +432,7 @@ function goProxy(){
     proxyFrame.src=q.startsWith("http")?q:"https://"+q;
 }
 
-/* SETTINGS OPEN ANIMATION */
+/* SETTINGS */
 function openSettings(){
     settingsApp.style.display="block";
     setTimeout(()=>settingsWindow.classList.add("open"),10);
@@ -399,39 +443,27 @@ function closeSettings(){
     setTimeout(()=>settingsApp.style.display="none",200);
 }
 
-/* DISGUISE */
 function applyDisguise(){
     let name=document.getElementById("tabName").value;
     if(name) document.title=name;
 }
 
 /* KEYBINDS */
-let tabState=0;
+let state=0;
 
 document.addEventListener("keydown",(e)=>{
 
-    /* ENTER SKIP */
     if(e.key==="Enter"){
         document.getElementById("video").style.display="none";
         document.getElementById("desktop").style.opacity="1";
     }
 
-    /* SWITCH APPS */
     if(e.key==="\\"){
-        tabState=(tabState+1)%3;
+        state=(state+1)%3;
 
-        if(tabState===0){
-            closeProxy();
-            closeSettings();
-        }
-        if(tabState===1){
-            openProxy();
-            closeSettings();
-        }
-        if(tabState===2){
-            openSettings();
-            closeProxy();
-        }
+        if(state===0){ closeProxy(); closeSettings(); }
+        if(state===1){ openProxy(); closeSettings(); }
+        if(state===2){ openSettings(); closeProxy(); }
     }
 
 });
