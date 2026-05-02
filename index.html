@@ -11,25 +11,23 @@
     --glass-soft: rgba(255,255,255,0.35);
     --border: rgba(0,0,0,0.08);
     --text: #111;
-    --blur: 25px;
 }
 
 * {
     margin:0;
     padding:0;
     box-sizing:border-box;
-    font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","Helvetica Neue",sans-serif;
+    font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display",sans-serif;
 }
 
-body, html {
-    width:100%;
-    height:100%;
+body {
+    height:100vh;
     overflow:hidden;
-    background: linear-gradient(135deg, #e6e6e6, #cfcfcf);
+    background: linear-gradient(135deg, #d8d8d8, #bfbfbf);
 }
 
-/* ---------- SPLASH ---------- */
-#splash {
+/* ---------- BOOT ---------- */
+#boot {
     position:fixed;
     inset:0;
     background:#f5f5f7;
@@ -38,33 +36,26 @@ body, html {
     justify-content:center;
     align-items:center;
     z-index:1000;
-    transition:1s ease;
 }
 
-#splash h1 {
-    font-weight:300;
-    letter-spacing:18px;
-    font-size:2.8rem;
+#boot h1 {
+    font-weight:200;
+    letter-spacing:20px;
+    font-size:3rem;
     color:#111;
 }
 
-#splash button {
+#boot button {
     margin-top:40px;
-    padding:12px 40px;
+    padding:12px 45px;
     border-radius:12px;
     border:1px solid rgba(0,0,0,0.1);
     background:white;
     cursor:pointer;
-    font-weight:500;
-    transition:.25s;
-}
-
-#splash button:hover {
-    transform:scale(1.05);
 }
 
 /* ---------- VIDEO ---------- */
-#intro-vid {
+#video {
     position:fixed;
     inset:0;
     width:100%;
@@ -79,11 +70,11 @@ body, html {
     position:fixed;
     inset:0;
     opacity:0;
-    transition:1.2s ease;
+    transition:1s;
 }
 
-/* ---------- MENU BAR (macOS style) ---------- */
-.topbar {
+/* ---------- MENU BAR ---------- */
+.menu {
     position:absolute;
     top:0;
     width:100%;
@@ -91,95 +82,51 @@ body, html {
     display:flex;
     justify-content:space-between;
     align-items:center;
-    padding:0 14px;
-    background:rgba(255,255,255,0.6);
-    backdrop-filter: blur(20px);
+    padding:0 12px;
+    background:rgba(255,255,255,0.7);
+    backdrop-filter:blur(25px);
     border-bottom:1px solid var(--border);
     font-size:12px;
-    color:var(--text);
 }
 
 /* ---------- CENTER CLOCK ---------- */
 .center {
     position:absolute;
-    top:18%;
+    top:35%;
     width:100%;
     text-align:center;
 }
 
 #time {
-    font-size:8rem;
+    font-size:9rem;
     font-weight:200;
     color:#111;
-    letter-spacing:-4px;
+    letter-spacing:-5px;
 }
 
 #date {
-    margin-top:6px;
+    margin-top:8px;
     font-size:0.9rem;
-    color:rgba(0,0,0,0.55);
+    color:rgba(0,0,0,0.5);
     letter-spacing:3px;
 }
 
-/* ---------- APP GRID ---------- */
-.grid {
-    position:absolute;
-    top:45%;
-    width:100%;
-    display:flex;
-    justify-content:center;
-    gap:70px;
-}
-
-.app {
-    display:flex;
-    flex-direction:column;
-    align-items:center;
-    gap:10px;
-    cursor:pointer;
-}
-
-.icon {
-    width:110px;
-    height:110px;
-    border-radius:24px;
-    background:rgba(255,255,255,0.7);
-    backdrop-filter: blur(25px);
-    border:1px solid rgba(0,0,0,0.08);
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    font-size:2.8rem;
-    box-shadow:0 20px 40px rgba(0,0,0,0.08);
-    transition:.25s;
-}
-
-.app:hover .icon {
-    transform:scale(1.08) translateY(-6px);
-    box-shadow:0 30px 60px rgba(0,0,0,0.12);
-}
-
-.app span {
-    font-size:12px;
-    color:rgba(0,0,0,0.55);
-}
-
-/* ---------- DOCK (macOS style) ---------- */
+/* ---------- DOCK ---------- */
 .dock {
     position:absolute;
-    bottom:18px;
+    bottom:20px;
     left:50%;
     transform:translateX(-50%);
     display:flex;
     gap:12px;
     padding:10px 14px;
-    border-radius:18px;
-    background:rgba(255,255,255,0.6);
+    border-radius:20px;
+    background:rgba(255,255,255,0.7);
     backdrop-filter:blur(30px);
     border:1px solid rgba(0,0,0,0.08);
 }
 
-.dock-item {
+.icon {
     width:54px;
     height:54px;
     border-radius:14px;
@@ -190,113 +137,88 @@ body, html {
     transition:.2s;
 }
 
-.dock-item:hover {
-    transform:scale(1.35) translateY(-8px);
+.icon:hover {
+    transform:scale(1.4) translateY(-6px);
+}
+
+/* ---------- ANIMATION ---------- */
+#desktop.show {
+    opacity:1;
 }
 </style>
 </head>
 
 <body>
 
-<!-- SPLASH -->
-<div id="splash">
+<!-- BOOT SCREEN -->
+<div id="boot">
     <h1>ORBITAL</h1>
-    <button onclick="boot()">Start</button>
+    <button onclick="start()">Start</button>
 </div>
 
 <!-- VIDEO -->
-<video id="intro-vid">
+<video id="video">
     <source src="video.mp4" type="video/mp4">
 </video>
 
 <!-- DESKTOP -->
 <div id="desktop">
 
-    <div class="topbar">
+    <div class="menu">
         <div> Orbital OS</div>
-        <div id="nav-time"></div>
+        <div id="topTime"></div>
     </div>
 
     <div class="center">
         <div id="time">0:00</div>
-        <div id="date">MONDAY, JANUARY 1</div>
-    </div>
-
-    <div class="grid">
-        <div class="app">
-            <div class="icon">🎮</div>
-            <span>Arcade</span>
-        </div>
-
-        <div class="app">
-            <div class="icon">🌐</div>
-            <span>Browser</span>
-        </div>
-
-        <div class="app">
-            <div class="icon">⚙️</div>
-            <span>Settings</span>
-        </div>
+        <div id="date">MONDAY</div>
     </div>
 
     <div class="dock">
-        <div class="dock-item">🏠</div>
-        <div class="dock-item">📂</div>
-        <div class="dock-item">🧭</div>
-        <div class="dock-item">🗑️</div>
+        <div class="icon">🏠</div>
+        <div class="icon">🌐</div>
+        <div class="icon">⚙️</div>
+        <div class="icon">📂</div>
     </div>
 
 </div>
 
 <script>
-function boot() {
-    const splash = document.getElementById("splash");
-    const video = document.getElementById("intro-vid");
 
-    splash.style.opacity = "0";
+function start() {
+    document.getElementById("boot").style.display = "none";
 
-    setTimeout(() => {
-        splash.style.display = "none";
-        video.style.display = "block";
-        video.play();
-    }, 800);
+    const video = document.getElementById("video");
+    video.style.display = "block";
+    video.play();
 }
 
-document.getElementById("intro-vid").onended = () => {
-    const v = document.getElementById("intro-vid");
-    const d = document.getElementById("desktop");
-
-    v.style.opacity = "0";
-    d.style.opacity = "1";
-
-    setTimeout(() => v.style.display = "none", 1000);
+document.getElementById("video").onended = () => {
+    document.getElementById("video").style.display = "none";
+    document.getElementById("desktop").classList.add("show");
 };
 
-/* clock */
+/* CLOCK */
 function tick() {
     const now = new Date();
 
     let h = now.getHours();
-    const m = now.getMinutes().toString().padStart(2,'0');
-    const ampm = h >= 12 ? "PM" : "AM";
+    const m = now.getMinutes().toString().padStart(2,"0");
 
-    h = h % 12 || 12;
-
-    const time = `${h}:${m}`;
+    const time = `${h % 12 || 12}:${m}`;
 
     document.getElementById("time").innerText = time;
-    document.getElementById("nav-time").innerText = `${time} ${ampm}`;
+    document.getElementById("topTime").innerText = time;
 
     document.getElementById("date").innerText =
         now.toLocaleDateString("en-US", {
-            weekday:"long",
-            month:"long",
-            day:"numeric"
+            weekday:"long"
         }).toUpperCase();
 }
 
 setInterval(tick,1000);
 tick();
+
 </script>
 
 </body>
