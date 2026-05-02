@@ -26,7 +26,7 @@ body {
     color:white;
 }
 
-/* ---------- BOOT SCREEN ---------- */
+/* ---------- BOOT ---------- */
 #boot {
     position:fixed;
     inset:0;
@@ -40,27 +40,19 @@ body {
 
 #boot h1 {
     font-weight:100;
-    letter-spacing:28px;
+    letter-spacing:30px;
     font-size:3rem;
     color:var(--red);
     text-shadow:0 0 25px rgba(255,42,42,0.25);
 }
 
-/* DOUBLE CLICK ENTER AREA */
 #enterArea {
     margin-top:40px;
-    font-size:12px;
-    letter-spacing:4px;
-    color:rgba(255,255,255,0.5);
-    padding:20px 40px;
+    padding:18px 40px;
     border:1px solid var(--red-soft);
-    cursor:default;
-    transition:.3s;
-}
-
-#enterArea:hover {
-    border-color:var(--red);
-    color:white;
+    letter-spacing:4px;
+    font-size:12px;
+    color:rgba(255,255,255,0.6);
 }
 
 /* ---------- VIDEO ---------- */
@@ -84,11 +76,8 @@ body {
     padding:8px 14px;
     background:rgba(0,0,0,0.6);
     border:1px solid var(--red-soft);
-    color:white;
     font-size:12px;
-    letter-spacing:2px;
     display:none;
-    cursor:pointer;
 }
 
 /* ---------- DESKTOP ---------- */
@@ -129,76 +118,97 @@ body {
     text-shadow:0 0 25px rgba(255,42,42,0.15);
 }
 
-#date {
-    margin-top:10px;
-    font-size:0.9rem;
-    letter-spacing:6px;
-    opacity:0.5;
-}
-
-/* APPS */
-.grid {
+/* ---------- HOTBAR ---------- */
+.hotbar {
     position:absolute;
-    top:55%;
-    width:100%;
-    display:flex;
-    justify-content:center;
-    gap:80px;
-}
-
-.app {
-    display:flex;
-    flex-direction:column;
-    align-items:center;
-    gap:10px;
-}
-
-.icon {
-    width:120px;
-    height:120px;
-    border-radius:28px;
-    border:1px solid var(--red-soft);
-    background:rgba(255,255,255,0.03);
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    transition:.3s;
-}
-
-.icon svg {
-    width:40px;
-    height:40px;
-    stroke:var(--red);
-    fill:none;
-    stroke-width:1.5;
-}
-
-.app span {
-    font-size:11px;
-    letter-spacing:3px;
-    color:rgba(255,255,255,0.6);
-}
-
-/* DOCK */
-.dock {
-    position:absolute;
-    bottom:25px;
+    bottom:18px;
     left:50%;
     transform:translateX(-50%);
     display:flex;
-    gap:14px;
-    padding:12px 16px;
-    border-radius:28px;
-    background:rgba(0,0,0,0.7);
+    gap:16px;
+    padding:14px 18px;
+    border-radius:26px;
+    background:rgba(0,0,0,0.75);
     border:1px solid var(--red-soft);
+    backdrop-filter:blur(40px);
 }
 
-.dock-item {
-    width:60px;
-    height:60px;
+/* ICON WRAPPER */
+.app {
+    width:70px;
+    height:70px;
+    border-radius:18px;
     display:flex;
     align-items:center;
     justify-content:center;
+    position:relative;
+    cursor:pointer;
+
+    animation:popIn .6s ease forwards;
+    opacity:0;
+}
+
+/* stagger animation */
+.app:nth-child(1){animation-delay:.1s;}
+.app:nth-child(2){animation-delay:.2s;}
+.app:nth-child(3){animation-delay:.3s;}
+
+/* ICON */
+.icon {
+    width:54px;
+    height:54px;
+    border-radius:14px;
+    background:rgba(255,255,255,0.03);
+    border:1px solid var(--red-soft);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    transition:.25s;
+}
+
+/* SVG */
+.icon svg {
+    width:26px;
+    height:26px;
+    stroke:var(--red);
+    fill:none;
+    stroke-width:1.6;
+}
+
+/* HOVER ANIMATION */
+.app:hover {
+    transform:translateY(-10px) scale(1.1);
+}
+
+.app:hover .icon {
+    border-color:var(--red);
+    box-shadow:0 0 25px rgba(255,42,42,0.3);
+}
+
+/* CLICK ANIMATION */
+.app:active {
+    transform:scale(0.95);
+}
+
+/* LABEL */
+.label {
+    position:absolute;
+    bottom:-18px;
+    font-size:10px;
+    letter-spacing:2px;
+    color:rgba(255,255,255,0.5);
+}
+
+/* POP IN ANIMATION */
+@keyframes popIn {
+    from {
+        transform:translateY(20px) scale(0.8);
+        opacity:0;
+    }
+    to {
+        transform:translateY(0) scale(1);
+        opacity:1;
+    }
 }
 </style>
 </head>
@@ -208,8 +218,6 @@ body {
 <!-- BOOT -->
 <div id="boot">
     <h1>ORBITAL OS</h1>
-
-    <!-- DOUBLE CLICK AREA -->
     <div id="enterArea">DOUBLE CLICK TO ENTER SYSTEM</div>
 </div>
 
@@ -230,10 +238,10 @@ body {
 
     <div class="center">
         <div id="time">0:00</div>
-        <div id="date">SYSTEM READY</div>
     </div>
 
-    <div class="grid">
+    <!-- HOTBAR -->
+    <div class="hotbar">
 
         <div class="app">
             <div class="icon">
@@ -242,7 +250,7 @@ body {
                     <path d="M8 10h.01M16 10h.01M9 14h6"/>
                 </svg>
             </div>
-            <span>ORBITAL ARCADE</span>
+            <div class="label">ARCADE</div>
         </div>
 
         <div class="app">
@@ -252,7 +260,7 @@ body {
                     <path d="M3 12h18M12 3c3 4 3 14 0 18"/>
                 </svg>
             </div>
-            <span>ORBITAL NET</span>
+            <div class="label">NET</div>
         </div>
 
         <div class="app">
@@ -261,7 +269,7 @@ body {
                     <path d="M12 2l3 6 7 .5-5 4 1.5 7L12 16l-6.5 3.5L7 12.5 2 8.5 9 8z"/>
                 </svg>
             </div>
-            <span>ORBITAL SYSTEM</span>
+            <div class="label">SYSTEM</div>
         </div>
 
     </div>
@@ -270,27 +278,16 @@ body {
 
 <script>
 
-let clickCount = 0;
-let clickTimer = null;
+/* DOUBLE CLICK ENTER */
+let clicks = 0;
+document.getElementById("enterArea").onclick = () => {
+    clicks++;
+    setTimeout(() => clicks = 0, 400);
 
-/* DOUBLE CLICK LOGIC */
-document.getElementById("enterArea").addEventListener("click", () => {
-    clickCount++;
+    if(clicks === 2) start();
+};
 
-    if (clickCount === 1) {
-        clickTimer = setTimeout(() => {
-            clickCount = 0;
-        }, 400);
-    }
-
-    if (clickCount === 2) {
-        clearTimeout(clickTimer);
-        startOS();
-        clickCount = 0;
-    }
-});
-
-function startOS() {
+function start() {
     document.getElementById("boot").style.display = "none";
 
     const v = document.getElementById("video");
@@ -302,17 +299,17 @@ function startOS() {
     v.play();
 }
 
-/* SKIP VIDEO */
+/* SKIP */
 function skipVideo() {
     const v = document.getElementById("video");
 
     v.pause();
     v.style.display = "none";
-
     document.getElementById("skip").style.display = "none";
     document.getElementById("desktop").style.opacity = "1";
 }
 
+/* END VIDEO */
 document.getElementById("video").onended = () => {
     document.getElementById("video").style.display = "none";
     document.getElementById("skip").style.display = "none";
@@ -322,10 +319,8 @@ document.getElementById("video").onended = () => {
 /* CLOCK */
 function tick() {
     const now = new Date();
-
     let h = now.getHours();
     const m = now.getMinutes().toString().padStart(2,"0");
-
     h = h % 12 || 12;
 
     document.getElementById("time").innerText = `${h}:${m}`;
