@@ -34,31 +34,39 @@ body{
     z-index:-1;
 }
 
-/* ⚠️ DISCLAIMER */
+/* ⚠️ SYSTEM WARNING */
 #disclaimer{
     position:fixed;
     inset:0;
-    background:rgba(0,0,0,0.92);
     display:flex;
     justify-content:center;
     align-items:center;
+    background:rgba(0,0,0,0.88);
     z-index:9999;
+
+    opacity:0;
+    animation:fadeIn 0.35s ease forwards;
 }
 
 .discBox{
     width:340px;
     padding:20px;
     border:1px solid var(--soft);
-    background:rgba(0,0,0,0.6);
-    backdrop-filter: blur(12px);
+    background:rgba(0,0,0,0.75);
+    backdrop-filter: blur(14px);
     text-align:center;
     color:var(--main);
+
+    transform:scale(0.7);
+    opacity:0;
+    animation:popIn 0.45s ease forwards;
 }
 
 .discBox h2{
     font-weight:100;
     letter-spacing:2px;
     margin-bottom:10px;
+    animation:glow 2s ease-in-out infinite alternate;
 }
 
 .discBox p{
@@ -74,19 +82,41 @@ body{
     border:1px solid var(--soft);
     color:var(--main);
     cursor:pointer;
+    transition:0.2s;
+}
+
+.discBox button:hover{
+    transform:scale(1.05);
+    border-color:var(--accent);
+}
+
+/* ANIMATIONS */
+@keyframes fadeIn{
+    from{opacity:0;}
+    to{opacity:1;}
+}
+
+@keyframes popIn{
+    0%{transform:scale(0.6);opacity:0;}
+    70%{transform:scale(1.05);opacity:1;}
+    100%{transform:scale(1);opacity:1;}
+}
+
+@keyframes glow{
+    from{text-shadow:0 0 6px rgba(124,247,255,0.2);}
+    to{text-shadow:0 0 14px rgba(124,247,255,0.7);}
 }
 
 /* BOOT */
 #boot{
     position:fixed;
     inset:0;
-    display:flex;
+    display:none;
     flex-direction:column;
     justify-content:center;
     align-items:center;
     background:#000;
     z-index:1000;
-    display:none;
     transition:opacity 0.7s ease;
 }
 
@@ -231,69 +261,6 @@ body{
     flex-direction:column;
     background:rgba(5,5,15,0.85);
     backdrop-filter: blur(18px);
-    transform:scale(0.85);
-    opacity:0;
-    transition:0.25s ease;
-}
-
-.window.open{
-    transform:scale(1);
-    opacity:1;
-}
-
-.windowTop{
-    height:40px;
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
-    padding:0 12px;
-    font-size:12px;
-    border-bottom:1px solid var(--soft);
-    color:var(--main);
-}
-
-.closeBtn{
-    color:var(--accent);
-    cursor:pointer;
-}
-
-/* PROXY */
-.windowBar{
-    display:flex;
-    gap:8px;
-    padding:10px;
-    border-bottom:1px solid var(--soft);
-}
-
-.windowBar input{
-    flex:1;
-    padding:8px;
-    background:transparent;
-    border:1px solid var(--soft);
-    color:var(--main);
-}
-
-.windowBar button{
-    padding:8px 12px;
-    background:transparent;
-    border:1px solid var(--soft);
-    color:var(--main);
-    cursor:pointer;
-}
-
-/* SETTINGS */
-.settingsGrid{
-    display:grid;
-    grid-template-columns:1fr 1fr;
-    gap:12px;
-    padding:12px;
-}
-
-.card{
-    padding:12px;
-    border:1px solid var(--soft);
-    background:rgba(0,0,0,0.4);
-    color:var(--main);
 }
 
 /* CANVAS */
@@ -309,13 +276,13 @@ body{
 
 <canvas id="space"></canvas>
 
-<!-- ⚠️ DISCLAIMER -->
+<!-- ⚠️ WARNING POPUP -->
 <div id="disclaimer">
     <div class="discBox">
-        <h2>NOTICE</h2>
+        <h2>SYSTEM WARNING</h2>
         <p>
-            This system is provided as-is with no guarantees or warranties.<br><br>
-            The creator is not responsible for any actions taken or any consequences that result from its use.<br><br>
+            This site could be blocked at any time.<br><br>
+            Join the DC so you don’t miss out — DC not made yet.<br><br>
             Use at your own risk — and have fun.
         </p>
         <button onclick="accept()">I Understand</button>
@@ -361,7 +328,6 @@ body{
     </div>
 
     <div id="dock">
-
         <div class="dock-app" onclick="openProxy()">
             <svg viewBox="0 0 24 24">
                 <circle cx="12" cy="12" r="9"></circle>
@@ -369,19 +335,13 @@ body{
                 <path d="M12 3c3 4 3 14 0 18"></path>
             </svg>
         </div>
-
-        <div class="dock-app" onclick="openSettings()">
-            <svg viewBox="0 0 24 24">
-                <path d="M12 15.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7z"></path>
-            </svg>
-        </div>
-
     </div>
+
 </div>
 
 <script>
 
-/* DISCLAIMER */
+/* WARNING ACCEPT */
 function accept(){
     document.getElementById("disclaimer").style.display="none";
     document.getElementById("boot").style.display="flex";
@@ -398,20 +358,11 @@ document.getElementById("enter").onclick=()=>{
     },700);
 };
 
-/* CLOCK */
-setInterval(()=>{
-    let d=new Date();
-    time.innerText=`${d.getHours()%12||12}:${String(d.getMinutes()).padStart(2,"0")}`;
-},1000);
-
-/* SIMPLE DATA */
+/* SIMPLE UI */
 quote.innerText="Orbit beyond limits.";
 sysStatus.innerText="ONLINE";
 signal.innerText="CLEAR";
 
-/* APPS */
-function openProxy(){proxyApp.style.display="block";}
-function openSettings(){settingsApp.style.display="block";}
 </script>
 
 </body>
