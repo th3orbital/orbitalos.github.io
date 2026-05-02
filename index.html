@@ -27,11 +27,53 @@ body{
     color:white;
 }
 
-/* 🌌 STAR CANVAS */
+/* 🌌 CANVAS */
 #space{
     position:fixed;
     inset:0;
     z-index:-1;
+}
+
+/* ⚠️ DISCLAIMER */
+#disclaimer{
+    position:fixed;
+    inset:0;
+    background:rgba(0,0,0,0.92);
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    z-index:9999;
+}
+
+.discBox{
+    width:340px;
+    padding:20px;
+    border:1px solid var(--soft);
+    background:rgba(0,0,0,0.6);
+    backdrop-filter: blur(12px);
+    text-align:center;
+    color:var(--main);
+}
+
+.discBox h2{
+    font-weight:100;
+    letter-spacing:2px;
+    margin-bottom:10px;
+}
+
+.discBox p{
+    font-size:12px;
+    opacity:0.85;
+    line-height:1.5;
+}
+
+.discBox button{
+    margin-top:14px;
+    padding:10px 16px;
+    background:transparent;
+    border:1px solid var(--soft);
+    color:var(--main);
+    cursor:pointer;
 }
 
 /* BOOT */
@@ -45,6 +87,7 @@ body{
     background:#000;
     z-index:1000;
     transition:opacity 0.7s ease;
+    display:none;
 }
 
 #boot h1{
@@ -58,8 +101,8 @@ body{
     margin-top:40px;
     padding:14px 40px;
     border:1px solid var(--soft);
-    font-size:12px;
     color:var(--main);
+    font-size:12px;
     cursor:pointer;
 }
 
@@ -126,8 +169,6 @@ body{
     background:rgba(0,0,0,0.35);
     border:1px solid var(--soft);
     backdrop-filter: blur(12px);
-    border-radius:10px;
-    color:var(--main);
     animation:float 6s ease-in-out infinite;
 }
 
@@ -144,12 +185,13 @@ body{
     opacity:0.7;
     margin-bottom:6px;
     letter-spacing:2px;
+    color:var(--main);
 }
 
 .wText{
     font-size:12px;
-    color:white;
     opacity:0.85;
+    color:white;
 }
 
 /* DOCK */
@@ -164,7 +206,6 @@ body{
     border-radius:18px;
     background:rgba(0,0,0,0.6);
     border:1px solid var(--soft);
-    backdrop-filter: blur(10px);
 }
 
 .dock-app{
@@ -263,24 +304,6 @@ body{
     border:1px solid var(--soft);
     background:rgba(0,0,0,0.4);
     color:var(--main);
-    display:flex;
-    flex-direction:column;
-    gap:8px;
-}
-
-.card input{
-    padding:8px;
-    background:transparent;
-    border:1px solid var(--soft);
-    color:var(--main);
-}
-
-.card button{
-    padding:6px;
-    background:transparent;
-    border:1px solid var(--soft);
-    color:var(--main);
-    cursor:pointer;
 }
 
 /* CONTAINERS */
@@ -302,17 +325,34 @@ body{
 
 <body>
 
+<!-- 🌌 BACKGROUND -->
 <canvas id="space"></canvas>
 
+<!-- ⚠️ DISCLAIMER -->
+<div id="disclaimer">
+    <div class="discBox">
+        <h2>NOTICE</h2>
+        <p>
+            This system is for educational / experimental use only.<br><br>
+            The creator is not responsible for any use or consequences.<br><br>
+            Use at your own risk — and have fun.
+        </p>
+        <button onclick="accept()">I Understand</button>
+    </div>
+</div>
+
+<!-- BOOT -->
 <div id="boot">
     <h1>ORBITAL OS</h1>
     <div id="enter">ENTER SYSTEM</div>
 </div>
 
+<!-- VIDEO -->
 <video id="video" muted>
-    <source src="video.mp4" type="video/mp4">
+    <source src="video.mp4">
 </video>
 
+<!-- DESKTOP -->
 <div id="desktop">
 
     <div class="topbar">
@@ -322,15 +362,15 @@ body{
 
     <div id="time">0:00</div>
 
-    <!-- 🧠 HOME WIDGETS -->
+    <!-- WIDGETS -->
     <div id="widgets">
         <div class="widget">
-            <div class="wTitle">SYSTEM STATUS</div>
+            <div class="wTitle">SYSTEM</div>
             <div class="wText" id="sysStatus"></div>
         </div>
 
         <div class="widget">
-            <div class="wTitle">UNIVERSE SIGNAL</div>
+            <div class="wTitle">SIGNAL</div>
             <div class="wText" id="signal"></div>
         </div>
 
@@ -340,6 +380,7 @@ body{
         </div>
     </div>
 
+    <!-- DOCK -->
     <div id="dock">
 
         <div class="dock-app" onclick="openProxy()">
@@ -355,8 +396,6 @@ body{
                 <path d="M12 15.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7z"></path>
                 <path d="M19 12h2"></path>
                 <path d="M3 12h2"></path>
-                <path d="M12 3v2"></path>
-                <path d="M12 19v2"></path>
             </svg>
         </div>
 
@@ -366,48 +405,42 @@ body{
 <!-- PROXY -->
 <div id="proxyApp">
     <div class="window" id="proxyWindow">
-
         <div class="windowTop">
-            <div>Orbital Proxy</div>
+            <div>Proxy</div>
             <div class="closeBtn" onclick="closeProxy()">✕</div>
         </div>
-
         <div class="windowBar">
             <input id="proxyUrl">
             <button onclick="goProxy()">Go</button>
         </div>
-
         <iframe id="proxyFrame"></iframe>
-
     </div>
 </div>
 
 <!-- SETTINGS -->
 <div id="settingsApp">
     <div class="window" id="settingsWindow">
-
         <div class="windowTop">
             <div>Settings</div>
             <div class="closeBtn" onclick="closeSettings()">✕</div>
         </div>
-
         <div class="settingsGrid">
             <div class="card">
                 <h3>Tab Name</h3>
                 <input id="tabName">
-                <button onclick="applyDisguise()">Apply</button>
-            </div>
-
-            <div class="card">
-                <h3>Redirect (\)</h3>
-                <input id="redirectUrl">
+                <button onclick="apply()">Apply</button>
             </div>
         </div>
-
     </div>
 </div>
 
 <script>
+
+/* DISCLAIMER */
+function accept(){
+    document.getElementById("disclaimer").style.display="none";
+    document.getElementById("boot").style.display="flex";
+}
 
 /* ENTER */
 document.getElementById("enter").onclick=()=>{
@@ -420,128 +453,75 @@ document.getElementById("enter").onclick=()=>{
     },700);
 };
 
-/* VIDEO END */
-video.onended=()=>{
-    video.style.display="none";
-    desktop.style.opacity="1";
-};
+/* SPACE ENGINE */
+const c=document.getElementById("space");
+const x=c.getContext("2d");
+c.width=innerWidth;
+c.height=innerHeight;
 
-/* 🌌 SPACE ENGINE */
-const canvas=document.getElementById("space");
-const ctx=canvas.getContext("2d");
-
-canvas.width=innerWidth;
-canvas.height=innerHeight;
-
-let stars=[],shooting=[];
-let mx=0,my=0,cx=0,cy=0;
+let stars=[],shoot=[],mx=0,my=0,cx=0,cy=0;
 
 for(let i=0;i<160;i++){
-    stars.push({
-        x:Math.random()*canvas.width,
-        y:Math.random()*canvas.height,
-        z:Math.random()*2+0.2
-    });
+    stars.push({x:Math.random()*c.width,y:Math.random()*c.height,z:Math.random()*2});
 }
 
-document.addEventListener("mousemove",(e)=>{
-    mx=(e.clientX/window.innerWidth-0.5)*2;
-    my=(e.clientY/window.innerHeight-0.5)*2;
+document.addEventListener("mousemove",e=>{
+    mx=(e.clientX/c.width-0.5)*2;
+    my=(e.clientY/c.height-0.5)*2;
 });
 
 setInterval(()=>{
-    shooting.push({
-        x:Math.random()*canvas.width,
-        y:Math.random()*canvas.height/2,
-        vx:6+Math.random()*4,
-        vy:2+Math.random()*2,
-        life:60
-    });
+    shoot.push({x:Math.random()*c.width,y:Math.random()*c.height/2,vx:6,vy:2,life:60});
 },2500);
 
 function draw(){
-    ctx.clearRect(0,0,canvas.width,canvas.height);
+    x.clearRect(0,0,c.width,c.height);
 
     cx+=(mx-cx)*0.06;
     cy+=(my-cy)*0.06;
 
     for(let s of stars){
-        let x=s.x+cx*40*s.z;
-        let y=s.y+cy*40*s.z;
-
-        ctx.fillStyle="#7cf7ff";
-        ctx.globalAlpha=0.6;
-        ctx.fillRect(x,y,1.2*s.z,1.2*s.z);
+        let px=s.x+cx*40*s.z;
+        let py=s.y+cy*40*s.z;
+        x.fillStyle="#7cf7ff";
+        x.globalAlpha=0.6;
+        x.fillRect(px,py,1.2,1.2);
     }
 
-    for(let i=shooting.length-1;i>=0;i--){
-        let s=shooting[i];
-
-        ctx.globalAlpha=s.life/60;
-        ctx.strokeStyle="#8b5cff";
-        ctx.beginPath();
-        ctx.moveTo(s.x,s.y);
-        ctx.lineTo(s.x-s.vx*3,s.y-s.vy*3);
-        ctx.stroke();
-
-        s.x+=s.vx;
-        s.y+=s.vy;
-        s.life--;
-
-        if(s.life<=0) shooting.splice(i,1);
-    }
-
-    ctx.globalAlpha=1;
     requestAnimationFrame(draw);
 }
 draw();
 
-/* WIDGETS */
-const quotes=[
-"Made of stardust and systems.",
-"Orbit beyond the visible.",
-"The void is not empty — it is data.",
-"Everything moves in silence.",
-];
-
-quote.innerText=quotes[Math.floor(Math.random()*quotes.length)];
-
-function update(){
-    let h=new Date().getHours();
-    sysStatus.innerText = h<12?"MORNING SECTOR ONLINE":"NIGHT SECTOR ACTIVE";
-    signal.innerText = Math.random()>0.5?"CLEAR SIGNAL":"MINOR INTERFERENCE";
-}
-setInterval(update,4000);
-update();
-
 /* CLOCK */
 setInterval(()=>{
     let d=new Date();
-    let h=d.getHours()%12||12;
-    let m=d.getMinutes().toString().padStart(2,"0");
-    time.innerText=`${h}:${m}`;
-    nav.innerText=`${h}:${m}`;
+    time.innerText=`${d.getHours()%12||12}:${String(d.getMinutes()).padStart(2,"0")}`;
 },1000);
 
+/* SIMPLE WIDGETS */
+quote.innerText="Orbit beyond limits.";
+sysStatus.innerText="SYSTEM ONLINE";
+signal.innerText="CLEAR";
+
 /* APPS */
-function openProxy(){proxyApp.style.display="block";setTimeout(()=>proxyWindow.classList.add("open"),10);proxyFrame.src="https://google.com";}
+function openProxy(){proxyApp.style.display="block";proxyWindow.classList.add("open");}
 function closeProxy(){proxyWindow.classList.remove("open");setTimeout(()=>proxyApp.style.display="none",200);}
-function goProxy(){let q=proxyUrl.value;if(!q)return;proxyFrame.src=q.includes(".")?q:"https://google.com/search?q="+q;}
+function goProxy(){proxyFrame.src=proxyUrl.value;}
 
-function openSettings(){settingsApp.style.display="block";setTimeout(()=>settingsWindow.classList.add("open"),10);}
+function openSettings(){settingsApp.style.display="block";settingsWindow.classList.add("open");}
 function closeSettings(){settingsWindow.classList.remove("open");setTimeout(()=>settingsApp.style.display="none",200);}
-function applyDisguise(){if(tabName.value)document.title=tabName.value;}
+function apply(){document.title=tabName.value;}
 
-/* KEYBINDS */
+/* KEY */
 let state=0;
-document.addEventListener("keydown",(e)=>{
+document.addEventListener("keydown",e=>{
     if(e.key==="\\"){
         state=(state+1)%3;
-        if(state===0){closeProxy();closeSettings();}
-        if(state===1){openProxy();closeSettings();}
-        if(state===2){openSettings();closeProxy();}
+        if(state===1) openProxy();
+        if(state===2) openSettings();
     }
 });
+
 </script>
 
 </body>
