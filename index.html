@@ -20,15 +20,15 @@
     user-select:none;
 }
 
-/* 🌌 SPACE BACKGROUND */
+/* 🌌 BASE */
 body{
     height:100vh;
     overflow:hidden;
-    color:white;
     background:#000;
+    color:white;
 }
 
-/* CANVAS */
+/* CANVAS BACKGROUND */
 #space{
     position:fixed;
     inset:0;
@@ -45,7 +45,7 @@ body{
     align-items:center;
     background:#000;
     z-index:1000;
-    transition:opacity 0.6s ease;
+    transition:opacity 0.7s ease;
 }
 
 #boot h1{
@@ -118,7 +118,7 @@ body{
     left:50%;
     transform:translateX(-50%);
     display:flex;
-    gap:16px;
+    gap:14px;
     padding:10px 14px;
     border-radius:18px;
     background:rgba(0,0,0,0.6);
@@ -130,22 +130,12 @@ body{
     width:60px;
     height:60px;
     display:flex;
-    flex-direction:column;
     align-items:center;
     justify-content:center;
     cursor:pointer;
-    position:relative;
 }
 
-.dock-label{
-    font-size:10px;
-    color:var(--main);
-    opacity:0.7;
-    position:absolute;
-    bottom:-14px;
-}
-
-/* ICONS */
+/* ICONS (UNCHANGED VISUALLY) */
 .dock-app svg{
     width:28px;
     height:28px;
@@ -157,7 +147,7 @@ body{
 }
 
 .dock-app:hover svg{
-    transform:scale(1.15);
+    transform:scale(1.12);
     filter: drop-shadow(0 0 14px rgba(139,92,255,0.8));
 }
 
@@ -169,6 +159,7 @@ body{
     flex-direction:column;
     background:rgba(5,5,15,0.85);
     backdrop-filter: blur(18px);
+
     transform:scale(0.85);
     opacity:0;
     transition:0.25s ease;
@@ -195,7 +186,7 @@ body{
     cursor:pointer;
 }
 
-/* PROXY */
+/* PROXY (UNCHANGED STRUCTURE) */
 .windowBar{
     display:flex;
     gap:8px;
@@ -217,6 +208,12 @@ body{
     border:1px solid var(--soft);
     color:var(--main);
     cursor:pointer;
+}
+
+iframe{
+    width:100%;
+    height:100%;
+    border:none;
 }
 
 /* SETTINGS */
@@ -253,12 +250,13 @@ body{
 }
 
 /* CONTAINERS */
-#proxyApp, #settingsApp{
+#proxyApp,#settingsApp{
     position:fixed;
     inset:0;
     display:none;
     z-index:2000;
 }
+
 </style>
 </head>
 
@@ -290,13 +288,23 @@ body{
     <div id="dock">
 
         <div class="dock-app" onclick="openProxy()">
-            🌐
-            <div class="dock-label">Proxy</div>
+            <!-- PROXY ICON (UNCHANGED) -->
+            <svg viewBox="0 0 24 24">
+                <circle cx="12" cy="12" r="9"></circle>
+                <path d="M3 12h18"></path>
+                <path d="M12 3c3 4 3 14 0 18"></path>
+            </svg>
         </div>
 
         <div class="dock-app" onclick="openSettings()">
-            ⚙️
-            <div class="dock-label">Settings</div>
+            <!-- SETTINGS ICON (UNCHANGED) -->
+            <svg viewBox="0 0 24 24">
+                <path d="M12 15.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7z"></path>
+                <path d="M19 12h2"></path>
+                <path d="M3 12h2"></path>
+                <path d="M12 3v2"></path>
+                <path d="M12 19v2"></path>
+            </svg>
         </div>
 
     </div>
@@ -312,7 +320,7 @@ body{
         </div>
 
         <div class="windowBar">
-            <input id="proxyUrl" placeholder="Search or URL">
+            <input id="proxyUrl">
             <button onclick="goProxy()">Go</button>
         </div>
 
@@ -339,7 +347,7 @@ body{
             </div>
 
             <div class="card">
-                <h3>Redirect (\ key)</h3>
+                <h3>Redirect (\)</h3>
                 <input id="redirectUrl">
             </div>
 
@@ -358,7 +366,7 @@ document.getElementById("enter").onclick=()=>{
         desktop.style.opacity="1";
         video.style.display="block";
         video.play();
-    },600);
+    },700);
 };
 
 /* VIDEO END */
@@ -367,15 +375,15 @@ video.onended=()=>{
     desktop.style.opacity="1";
 };
 
-/* 🌌 SPACE ENGINE */
+/* 🌌 STARFIELD */
 const canvas=document.getElementById("space");
 const ctx=canvas.getContext("2d");
 
 canvas.width=innerWidth;
 canvas.height=innerHeight;
 
-let stars=[];
-let shooting=[];
+let stars=[],shooting=[];
+let mx=0,my=0,cx=0,cy=0;
 
 for(let i=0;i<160;i++){
     stars.push({
@@ -386,11 +394,9 @@ for(let i=0;i<160;i++){
 }
 
 document.addEventListener("mousemove",(e)=>{
-    mouseX=(e.clientX-canvas.width/2)*0.002;
-    mouseY=(e.clientY-canvas.height/2)*0.002;
+    mx=(e.clientX/window.innerWidth-0.5)*2;
+    my=(e.clientY/window.innerHeight-0.5)*2;
 });
-
-let mouseX=0,mouseY=0;
 
 function spawn(){
     shooting.push({
@@ -406,13 +412,16 @@ setInterval(spawn,2500);
 function draw(){
     ctx.clearRect(0,0,canvas.width,canvas.height);
 
+    cx+=(mx-cx)*0.06;
+    cy+=(my-cy)*0.06;
+
     for(let s of stars){
-        let px=s.x+mouseX*50*s.z;
-        let py=s.y+mouseY*50*s.z;
+        let x=s.x+cx*40*s.z;
+        let y=s.y+cy*40*s.z;
 
         ctx.fillStyle="#7cf7ff";
         ctx.globalAlpha=0.6;
-        ctx.fillRect(px,py,1.5*s.z,1.5*s.z);
+        ctx.fillRect(x,y,1.2*s.z,1.2*s.z);
     }
 
     for(let i=shooting.length-1;i>=0;i--){
@@ -457,7 +466,6 @@ function applyDisguise(){if(tabName.value)document.title=tabName.value;}
 
 /* KEYBINDS */
 let state=0;
-
 document.addEventListener("keydown",(e)=>{
     if(e.key==="\\"){
         state=(state+1)%3;
@@ -466,6 +474,7 @@ document.addEventListener("keydown",(e)=>{
         if(state===2){openSettings();closeProxy();}
     }
 });
+
 </script>
 
 </body>
