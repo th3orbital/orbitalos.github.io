@@ -121,18 +121,12 @@ body{
 
 .window{
     position:absolute;
-    width:420px;
-    height:280px;
+    width:380px;
+    height:240px;
     background:rgba(10,10,10,0.95);
     border:1px solid var(--red-soft);
     display:flex;
     flex-direction:column;
-    animation:pop .2s ease;
-}
-
-@keyframes pop{
-    from{transform:scale(0.9);opacity:0;}
-    to{transform:scale(1);opacity:1;}
 }
 
 .w-top{
@@ -152,9 +146,11 @@ body{
 
 .w-content{
     flex:1;
-    padding:10px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
     font-size:12px;
-    color:rgba(255,255,255,0.7);
+    color:rgba(255,255,255,0.6);
 }
 
 /* ---------- DOCK ---------- */
@@ -188,39 +184,82 @@ body{
     stroke-width:1.6;
 }
 
-/* ---------- BROWSER UI ---------- */
-.browser-bar{
-    display:flex;
-    gap:6px;
-    margin-bottom:10px;
-}
-
-.browser-bar input{
-    flex:1;
-    padding:6px;
+/* ---------- FULLSCREEN NET ---------- */
+#netApp{
+    position:fixed;
+    inset:0;
     background:#000;
-    border:1px solid var(--red-soft);
-    color:white;
-    font-size:11px;
-    outline:none;
+    display:none;
+    z-index:2000;
 }
 
-.browser-bar button{
-    background:#000;
-    border:1px solid var(--red-soft);
-    color:white;
-    font-size:11px;
-    padding:6px 10px;
-    cursor:pointer;
-}
-
-.browser-view{
-    flex:1;
-    border:1px solid var(--red-soft);
+/* net boot */
+#netBoot{
+    position:absolute;
+    inset:0;
     display:flex;
     align-items:center;
     justify-content:center;
-    color:rgba(255,255,255,0.5);
+    font-size:2rem;
+    letter-spacing:18px;
+    color:var(--red);
+    animation:netBoot 1.2s ease forwards;
+}
+
+@keyframes netBoot{
+    0%{opacity:0; transform:scale(0.9);}
+    50%{opacity:1;}
+    100%{opacity:0; transform:scale(1.1);}
+}
+
+/* net ui */
+#netUI{
+    position:absolute;
+    inset:0;
+    display:none;
+    flex-direction:column;
+}
+
+#netTop{
+    height:40px;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    padding:0 12px;
+    border-bottom:1px solid var(--red-soft);
+    font-size:12px;
+}
+
+#netBar{
+    display:flex;
+    gap:8px;
+    padding:10px;
+}
+
+#netBar input{
+    flex:1;
+    background:#000;
+    border:1px solid var(--red-soft);
+    color:white;
+    padding:8px;
+    font-size:12px;
+    outline:none;
+}
+
+#netBar button{
+    background:#000;
+    border:1px solid var(--red-soft);
+    color:white;
+    padding:8px 12px;
+    cursor:pointer;
+}
+
+/* REAL BROWSER */
+#netFrame{
+    width:100%;
+    height:100%;
+    border:none;
+    background:#000;
 }
 </style>
 </head>
@@ -262,7 +301,7 @@ body{
             </svg>
         </div>
 
-        <div class="dock-app" onclick="openApp('Net')">
+        <div class="dock-app" onclick="openNet()">
             <svg viewBox="0 0 24 24">
                 <circle cx="12" cy="12" r="9"/>
                 <path d="M3 12h18M12 3c3 4 3 14 0 18"/>
@@ -277,6 +316,28 @@ body{
 
     </div>
 
+</div>
+
+<!-- FULL NET -->
+<div id="netApp">
+
+    <div id="netBoot">ORBITAL NET</div>
+
+    <div id="netUI">
+
+        <div id="netTop">
+            <div>ORBITAL NET</div>
+            <div onclick="closeNet()" style="cursor:pointer;color:#ff2a2a;">EXIT</div>
+        </div>
+
+        <div id="netBar">
+            <input id="netUrl" placeholder="enter url (https://...)">
+            <button onclick="loadNet()">GO</button>
+        </div>
+
+        <iframe id="netFrame"></iframe>
+
+    </div>
 </div>
 
 <script>
@@ -317,43 +378,59 @@ document.getElementById("video").onended=()=>{
     document.getElementById("desktop").style.opacity="1";
 };
 
-/* OPEN APPS */
+/* APPS */
 function openApp(name){
-
     const win=document.createElement("div");
     win.className="window";
-    win.style.left=(200+Math.random()*150)+"px";
-    win.style.top=(120+Math.random()*120)+"px";
+    win.style.left="200px";
+    win.style.top="150px";
     win.style.zIndex=++z;
-
-    let content="";
-
-    if(name==="Net"){
-        content=`
-            <div class="browser-bar">
-                <input placeholder="Enter URL...">
-                <button>GO</button>
-            </div>
-            <div class="browser-view">
-                ORBITAL NET READY
-            </div>
-        `;
-    }
-    else{
-        content=`${name} APPLICATION LOADED`;
-    }
 
     win.innerHTML=`
         <div class="w-top">
             <div>${name}</div>
             <div class="close" onclick="this.parentElement.parentElement.remove()">✕</div>
         </div>
-        <div class="w-content">
-            ${content}
-        </div>
+        <div class="w-content">${name} APP</div>
     `;
 
     document.getElementById("apps").appendChild(win);
+}
+
+/* NET OPEN */
+function openNet(){
+    document.getElementById("netApp").style.display="block";
+    document.getElementById("desktop").style.opacity="0";
+
+    const boot=document.getElementById("netBoot");
+    const ui=document.getElementById("netUI");
+
+    boot.style.display="flex";
+    ui.style.display="none";
+
+    setTimeout(()=>{
+        boot.style.display="none";
+        ui.style.display="flex";
+    },1200);
+}
+
+function closeNet(){
+    document.getElementById("netApp").style.display="none";
+    document.getElementById("desktop").style.opacity="1";
+}
+
+/* REAL BROWSER */
+function loadNet(){
+    let url=document.getElementById("netUrl").value;
+    const frame=document.getElementById("netFrame");
+
+    if(!url) return;
+
+    if(!url.startsWith("http")){
+        url="https://"+url;
+    }
+
+    frame.src=url;
 }
 
 /* CLOCK */
