@@ -1,300 +1,78 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Orbital OS | Noir</title>
+const splash = document.getElementById("splash");
+const video = document.getElementById("intro-vid");
+const desktop = document.getElementById("desktop");
 
-<style>
-:root {
-    --bg1:#0a0a0a;
-    --bg2:#000;
-    --glass:rgba(255,255,255,0.04);
-    --border:rgba(255,255,255,0.12);
-    --text-dim:rgba(255,255,255,0.45);
-}
-
-/* base */
-* {
-    margin:0;
-    padding:0;
-    box-sizing:border-box;
-    font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display",sans-serif;
-}
-
-body {
-    height:100vh;
-    overflow:hidden;
-    background: radial-gradient(circle at 50% 20%, #111 0%, #050505 40%, #000 100%);
-    color:white;
-}
-
-/* ---------- SPLASH ---------- */
-#splash {
-    position:fixed;
-    inset:0;
-    background:#000;
-    display:flex;
-    flex-direction:column;
-    align-items:center;
-    justify-content:center;
-    z-index:1000;
-    transition:1s;
-}
-
-#logo {
-    font-size:3rem;
-    font-weight:100;
-    letter-spacing:30px;
-    opacity:.5;
-}
-
-#bootBtn {
-    margin-top:50px;
-    padding:14px 55px;
-    border:1px solid var(--border);
-    background:none;
-    color:white;
-    letter-spacing:6px;
-    cursor:pointer;
-    transition:.4s;
-}
-
-#bootBtn:hover {
-    background:white;
-    color:black;
-    letter-spacing:10px;
-}
-
-/* ---------- VIDEO ---------- */
-#intro {
-    position:fixed;
-    inset:0;
-    width:100%;
-    height:100%;
-    object-fit:cover;
-    display:none;
-    z-index:500;
-    filter:grayscale(100%) contrast(1.2);
-}
-
-/* ---------- DESKTOP ---------- */
-#desktop {
-    position:fixed;
-    inset:0;
-    opacity:0;
-    transition:2s;
-}
-
-/* top bar */
-.topbar {
-    height:36px;
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
-    padding:0 20px;
-    background:rgba(0,0,0,.5);
-    backdrop-filter:blur(40px);
-    border-bottom:1px solid var(--border);
-    font-size:12px;
-}
-
-/* clock */
-.center {
-    position:absolute;
-    top:18%;
-    width:100%;
-    text-align:center;
-}
-
-#time {
-    font-size:9rem;
-    font-weight:100;
-    letter-spacing:-6px;
-    text-shadow:0 0 40px rgba(255,255,255,.08);
-}
-
-#date {
-    margin-top:10px;
-    font-size:.9rem;
-    letter-spacing:8px;
-    color:var(--text-dim);
-}
-
-/* apps */
-.apps {
-    position:absolute;
-    top:48%;
-    width:100%;
-    display:flex;
-    justify-content:center;
-    gap:80px;
-}
-
-.app {
-    text-align:center;
-    cursor:pointer;
-}
-
-.icon {
-    width:120px;
-    height:120px;
-    border-radius:30px;
-    background:var(--glass);
-    backdrop-filter:blur(40px);
-    border:1px solid var(--border);
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    font-size:3rem;
-    transition:.35s;
-}
-
-.app:hover .icon {
-    transform:translateY(-12px) scale(1.08);
-    background:rgba(255,255,255,0.1);
-}
-
-.app span {
-    display:block;
-    margin-top:15px;
-    font-size:11px;
-    letter-spacing:3px;
-    color:var(--text-dim);
-}
-
-/* dock */
-.dock {
-    position:absolute;
-    bottom:30px;
-    left:50%;
-    transform:translateX(-50%);
-    display:flex;
-    gap:18px;
-    padding:12px 18px;
-    border-radius:40px;
-    background:rgba(255,255,255,0.04);
-    backdrop-filter:blur(60px);
-    border:1px solid var(--border);
-}
-
-.dock-item {
-    width:60px;
-    height:60px;
-    border-radius:18px;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    font-size:1.8rem;
-    transition:.25s;
-}
-
-.dock-item:hover {
-    transform:scale(1.25) translateY(-10px);
-    background:rgba(255,255,255,0.1);
-}
-</style>
-</head>
-
-<body>
-
-<!-- splash -->
-<div id="splash">
-    <div id="logo">ORBITAL</div>
-    <button id="bootBtn" onclick="boot()">BOOT</button>
-</div>
-
-<!-- video -->
-<video id="intro">
-    <source src="video.mp4" type="video/mp4">
-</video>
-
-<!-- desktop -->
-<div id="desktop">
-
-    <div class="topbar">
-        <div>ORBITAL</div>
-        <div id="navTime"></div>
-    </div>
-
-    <div class="center">
-        <div id="time"></div>
-        <div id="date"></div>
-    </div>
-
-    <div class="apps">
-        <div class="app">
-            <div class="icon">🎮</div>
-            <span>ARCADE</span>
-        </div>
-        <div class="app">
-            <div class="icon">🌐</div>
-            <span>PROXY</span>
-        </div>
-        <div class="app">
-            <div class="icon">⚙️</div>
-            <span>SETTINGS</span>
-        </div>
-    </div>
-
-    <div class="dock">
-        <div class="dock-item">🏠</div>
-        <div class="dock-item">📂</div>
-        <div class="dock-item">🧭</div>
-    </div>
-
-</div>
-
-<script>
-
-/* boot sequence */
-function boot(){
-    const splash = document.getElementById("splash");
-    const vid = document.getElementById("intro");
-
+/* ---------- BOOT SEQUENCE ---------- */
+function boot() {
     splash.style.opacity = "0";
 
-    setTimeout(()=>{
-        splash.style.display="none";
-        vid.style.display="block";
+    setTimeout(() => {
+        splash.style.display = "none";
 
-        vid.currentTime = 0;
-        vid.play();
-    },1000);
+        if (!video) {
+            showDesktop();
+            return;
+        }
+
+        video.style.display = "block";
+        video.currentTime = 0;
+
+        const playPromise = video.play();
+
+        // handle autoplay restrictions safely
+        if (playPromise !== undefined) {
+            playPromise.catch(() => {
+                showDesktop(); // fallback if video blocked
+            });
+        }
+    }, 900);
 }
 
-/* after video */
-document.getElementById("intro").onended = ()=>{
-    const vid = document.getElementById("intro");
-    const desk = document.getElementById("desktop");
+/* ---------- VIDEO END HANDLER ---------- */
+if (video) {
+    video.onended = () => {
+        video.style.transition = "opacity 1.2s ease";
+        video.style.opacity = "0";
 
-    vid.style.transition="1.5s";
-    vid.style.opacity="0";
+        setTimeout(() => {
+            video.style.display = "none";
+            showDesktop();
+        }, 1200);
+    };
+}
 
-    desk.style.opacity="1";
+/* ---------- SHOW DESKTOP ---------- */
+function showDesktop() {
+    desktop.style.opacity = "1";
+}
 
-    setTimeout(()=>vid.style.display="none",1500);
-};
-
-/* clock */
-function updateTime(){
+/* ---------- CLOCK SYSTEM ---------- */
+function updateClock() {
     const now = new Date();
-    let h = now.getHours();
-    let m = now.getMinutes().toString().padStart(2,'0');
-    let ampm = h>=12?"PM":"AM";
 
-    h = h%12 || 12;
+    let hours = now.getHours();
+    const minutes = now.getMinutes().toString().padStart(2, "0");
+    const ampm = hours >= 12 ? "PM" : "AM";
 
-    document.getElementById("time").innerText = `${h}:${m}`;
-    document.getElementById("navTime").innerText = `${h}:${m} ${ampm}`;
-    document.getElementById("date").innerText =
-        now.toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric'}).toUpperCase();
+    hours = hours % 12 || 12;
+
+    const timeStr = `${hours}:${minutes}`;
+
+    const timeEl = document.getElementById("time");
+    const navTime = document.getElementById("nav-time");
+    const dateEl = document.getElementById("date");
+
+    if (timeEl) timeEl.textContent = timeStr;
+    if (navTime) navTime.textContent = `${timeStr} ${ampm}`;
+
+    if (dateEl) {
+        dateEl.textContent = now.toLocaleDateString("en-US", {
+            weekday: "long",
+            month: "long",
+            day: "numeric"
+        }).toUpperCase();
+    }
 }
 
-setInterval(updateTime,1000);
-updateTime();
-
-</script>
-
-</body>
-</html>
+setInterval(updateClock, 1000);
+updateClock();
