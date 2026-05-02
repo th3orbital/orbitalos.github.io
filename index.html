@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Orbital Search OS</title>
+<title>Orbital OS</title>
 
 <style>
 :root{
@@ -20,10 +20,10 @@
 }
 
 body{
+    height:100vh;
+    overflow:hidden;
     background:#000;
     color:white;
-    overflow:hidden;
-    height:100vh;
 }
 
 /* ---------- BOOT ---------- */
@@ -40,7 +40,7 @@ body{
 
 #boot h1{
     font-weight:100;
-    letter-spacing:26px;
+    letter-spacing:28px;
     font-size:3rem;
     color:var(--red);
 }
@@ -127,58 +127,17 @@ body{
     border:1px solid var(--soft);
 }
 
-.dock-btn{
+.dock-app{
     width:60px;
     height:60px;
     display:flex;
     align-items:center;
     justify-content:center;
     cursor:pointer;
-    border-radius:12px;
-    border:1px solid transparent;
 }
 
-.dock-btn:hover{
-    border:1px solid var(--soft);
-}
-
-/* ---------- WINDOW ---------- */
-.window{
-    position:absolute;
-    width:380px;
-    height:240px;
-    background:rgba(10,10,10,0.95);
-    border:1px solid var(--soft);
-    display:flex;
-    flex-direction:column;
-}
-
-.w-top{
-    height:30px;
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
-    padding:0 10px;
-    border-bottom:1px solid var(--soft);
-    font-size:11px;
-}
-
-.close{
-    cursor:pointer;
-    color:var(--red);
-}
-
-.w-content{
-    flex:1;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    font-size:12px;
-    color:rgba(255,255,255,0.6);
-}
-
-/* ---------- SEARCH OS ---------- */
-#searchOS{
+/* ---------- PROXY SYSTEM ---------- */
+#proxyApp{
     position:fixed;
     inset:0;
     display:none;
@@ -186,7 +145,7 @@ body{
     z-index:2000;
 }
 
-#searchTop{
+#proxyTop{
     height:40px;
     display:flex;
     justify-content:space-between;
@@ -196,13 +155,13 @@ body{
     font-size:12px;
 }
 
-#searchBar{
+#proxyBar{
     display:flex;
     gap:8px;
     padding:10px;
 }
 
-#searchBar input{
+#proxyBar input{
     flex:1;
     padding:8px;
     background:#000;
@@ -211,7 +170,7 @@ body{
     outline:none;
 }
 
-#searchBar button{
+#proxyBar button{
     background:#000;
     border:1px solid var(--soft);
     color:white;
@@ -219,7 +178,7 @@ body{
     cursor:pointer;
 }
 
-#frame{
+#proxyFrame{
     width:100%;
     height:100%;
     border:none;
@@ -231,7 +190,7 @@ body{
 
 <!-- BOOT -->
 <div id="boot">
-    <h1>ORBITAL SEARCH</h1>
+    <h1>ORBITAL OS</h1>
     <div id="enter">DOUBLE CLICK TO ENTER SYSTEM</div>
 </div>
 
@@ -246,33 +205,33 @@ body{
 <div id="desktop">
 
     <div class="topbar">
-        <div>ORBITAL SEARCH OS</div>
+        <div>ORBITAL OS</div>
         <div id="nav"></div>
     </div>
 
     <div id="time">0:00</div>
 
     <div id="dock">
-        <div class="dock-btn" onclick="openSearch()">🌐</div>
-        <div class="dock-btn" onclick="openApp()">⚙️</div>
+        <div class="dock-app" onclick="openProxy()">🌐</div>
+        <div class="dock-app" onclick="openApp()">⚙️</div>
     </div>
 
 </div>
 
-<!-- SEARCH OS -->
-<div id="searchOS">
+<!-- ORBITAL'S PROXY -->
+<div id="proxyApp">
 
-    <div id="searchTop">
-        <div>ORBITAL SEARCH</div>
-        <div onclick="closeSearch()" style="cursor:pointer;color:#ff2a2a;">EXIT</div>
+    <div id="proxyTop">
+        <div>ORBITAL'S PROXY</div>
+        <div onclick="closeProxy()" style="cursor:pointer;color:#ff2a2a;">EXIT</div>
     </div>
 
-    <div id="searchBar">
-        <input id="query" placeholder="Search Google or enter URL">
-        <button onclick="go()">GO</button>
+    <div id="proxyBar">
+        <input id="proxyUrl" placeholder="Search Google or enter URL">
+        <button onclick="goProxy()">GO</button>
     </div>
 
-    <iframe id="frame"></iframe>
+    <iframe id="proxyFrame"></iframe>
 
 </div>
 
@@ -313,27 +272,28 @@ document.getElementById("video").onended=()=>{
     document.getElementById("desktop").style.opacity="1";
 };
 
-/* WINDOW APP */
+/* APP */
 function openApp(){
-    alert("System settings placeholder");
+    alert("System placeholder");
 }
 
-/* SEARCH OPEN */
-function openSearch(){
-    document.getElementById("searchOS").style.display="block";
+/* OPEN PROXY */
+function openProxy(){
+    document.getElementById("proxyApp").style.display="block";
     document.getElementById("desktop").style.opacity="0";
-    document.getElementById("frame").src="https://www.google.com";
+    document.getElementById("proxyFrame").src="https://www.google.com";
 }
 
-function closeSearch(){
-    document.getElementById("searchOS").style.display="none";
+/* CLOSE PROXY */
+function closeProxy(){
+    document.getElementById("proxyApp").style.display="none";
     document.getElementById("desktop").style.opacity="1";
 }
 
-/* GOOGLE BROWSER */
-function go(){
-    let q=document.getElementById("query").value;
-    let frame=document.getElementById("frame");
+/* GOOGLE NAV */
+function goProxy(){
+    let q=document.getElementById("proxyUrl").value;
+    let frame=document.getElementById("proxyFrame");
 
     if(!q){
         frame.src="https://www.google.com";
