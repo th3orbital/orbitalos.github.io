@@ -8,7 +8,6 @@
 <style>
 :root{
     --red:#ff2a2a;
-    --soft:rgba(255,42,42,0.25);
 }
 
 *{
@@ -28,9 +27,11 @@ body{
     radial-gradient(circle at 50% 40%, rgba(255,40,40,0.12), transparent 45%),
     url("https://images.unsplash.com/photo-1462331940025-496dfbfc7564?q=80&w=1920&auto=format&fit=crop")
     center/cover no-repeat fixed;
+
+    transition: background-position 0.2s ease-out;
 }
 
-/* stars */
+/* STARS */
 body::after{
     content:"";
     position:fixed;
@@ -70,7 +71,7 @@ body::after{
 #enter{
     margin-top:40px;
     padding:14px 40px;
-    border:1px solid var(--soft);
+    border:1px solid rgba(255,42,42,0.25);
     font-size:12px;
     cursor:pointer;
 }
@@ -95,7 +96,7 @@ body::after{
     transition:1s;
 }
 
-/* TOP BAR */
+/* TOPBAR */
 .topbar{
     position:absolute;
     top:0;
@@ -106,7 +107,7 @@ body::after{
     align-items:center;
     padding:0 12px;
     background:rgba(0,0,0,0.7);
-    border-bottom:1px solid var(--soft);
+    border-bottom:1px solid rgba(255,42,42,0.25);
     font-size:12px;
 }
 
@@ -131,7 +132,7 @@ body::after{
     padding:10px 14px;
     border-radius:18px;
     background:rgba(0,0,0,0.7);
-    border:1px solid var(--soft);
+    border:1px solid rgba(255,42,42,0.25);
 }
 
 .dock-app{
@@ -143,100 +144,110 @@ body::after{
     cursor:pointer;
 }
 
-.dock-app svg{
-    width:26px;
-    height:26px;
-    stroke:var(--red);
-    fill:none;
-    stroke-width:1.6;
+/* WINDOW SYSTEM */
+.window{
+    width:100%;
+    height:100%;
+    display:flex;
+    flex-direction:column;
+    background:rgba(0,0,0,0.85);
+    backdrop-filter: blur(18px);
+
+    transform: scale(0.85);
+    opacity:0;
+    transition:0.25s ease;
 }
 
-/* PROXY */
-#proxyApp{
-    position:fixed;
-    inset:0;
-    display:none;
-    background:#000;
-    z-index:2000;
+.window.open{
+    transform: scale(1);
+    opacity:1;
 }
 
-#proxyTop{
+.windowTop{
     height:40px;
     display:flex;
     justify-content:space-between;
     align-items:center;
     padding:0 12px;
-    border-bottom:1px solid var(--soft);
     font-size:12px;
+    border-bottom:1px solid rgba(255,42,42,0.25);
 }
 
-#proxyBar{
+.closeBtn{
+    color:var(--red);
+    cursor:pointer;
+}
+
+/* PROXY */
+.windowBar{
     display:flex;
     gap:8px;
     padding:10px;
+    border-bottom:1px solid rgba(255,42,42,0.15);
 }
 
-#proxyBar input{
+.windowBar input{
     flex:1;
     padding:8px;
-    background:#000;
-    border:1px solid var(--soft);
+    background:transparent;
+    border:1px solid rgba(255,42,42,0.25);
     color:white;
 }
 
-#proxyBar button{
+.windowBar button{
     padding:8px 12px;
-    background:#000;
-    border:1px solid var(--soft);
+    background:transparent;
+    border:1px solid rgba(255,42,42,0.25);
     color:white;
     cursor:pointer;
 }
 
-#proxyFrame{
+iframe{
     width:100%;
     height:100%;
     border:none;
 }
 
 /* SETTINGS */
-#settingsApp{
-    position:fixed;
-    inset:0;
-    display:none;
-    background:rgba(0,0,0,0.85);
-    z-index:2100;
+.settingsGrid{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:12px;
+    padding:12px;
 }
 
-#settingsTop{
-    height:40px;
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
-    padding:0 12px;
-    border-bottom:1px solid var(--soft);
-    font-size:12px;
-}
-
-#settingsBody{
-    padding:20px;
-    display:flex;
-    flex-direction:column;
-    gap:16px;
-}
-
-.setting{
+.card{
+    padding:12px;
+    border:1px solid rgba(255,42,42,0.2);
+    background:rgba(0,0,0,0.4);
     display:flex;
     flex-direction:column;
     gap:8px;
-    font-size:12px;
 }
 
-input{
+.card input{
     padding:8px;
-    background:#000;
-    border:1px solid var(--soft);
+    background:transparent;
+    border:1px solid rgba(255,42,42,0.25);
     color:white;
 }
+
+.card button{
+    padding:6px;
+    background:transparent;
+    border:1px solid rgba(255,42,42,0.25);
+    color:white;
+    cursor:pointer;
+}
+
+/* CONTAINERS */
+#proxyApp, #settingsApp{
+    position:fixed;
+    inset:0;
+    display:none;
+    z-index:2000;
+}
+
 </style>
 </head>
 
@@ -264,60 +275,57 @@ input{
     <div id="time">0:00</div>
 
     <div id="dock">
-
-        <!-- proxy -->
         <div class="dock-app" onclick="openProxy()">
-            <svg viewBox="0 0 24 24">
-                <circle cx="12" cy="12" r="9"/>
-                <path d="M3 12h18"/>
-                <path d="M12 3c3 4 3 14 0 18"/>
-            </svg>
+            🌐
         </div>
 
-        <!-- settings -->
         <div class="dock-app" onclick="openSettings()">
-            <svg viewBox="0 0 24 24">
-                <path d="M12 15.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7z"/>
-                <path d="M19.4 15a7.8 7.8 0 0 0 .1-1l2-1.5-2-3.5-2.4.5a7.5 7.5 0 0 0-1.7-1L15 6h-6l-.4 2a7.5 7.5 0 0 0-1.7 1L4.5 8.5 2.5 12 4.4 13.5a7.8 7.8 0 0 0 .1 1L2.5 16l2 3.5 2.4-.5a7.5 7.5 0 0 0 1.7 1l.4 2h6l.4-2a7.5 7.5 0 0 0 1.7-1l2.4.5 2-3.5-2-1.5z"/>
-            </svg>
+            ⚙️
         </div>
-
     </div>
 </div>
 
 <!-- PROXY -->
 <div id="proxyApp">
-    <div id="proxyTop">
-        <div>ORBITAL PROXY</div>
-        <div onclick="closeProxy()" style="color:red;cursor:pointer;">EXIT</div>
-    </div>
+    <div class="window" id="proxyWindow">
 
-    <div id="proxyBar">
-        <input id="proxyUrl" placeholder="Search or URL">
-        <button onclick="goProxy()">GO</button>
-    </div>
+        <div class="windowTop">
+            <div>Orbital Proxy</div>
+            <div class="closeBtn" onclick="closeProxy()">✕</div>
+        </div>
 
-    <iframe id="proxyFrame"></iframe>
+        <div class="windowBar">
+            <input id="proxyUrl" placeholder="Search or URL">
+            <button onclick="goProxy()">Go</button>
+        </div>
+
+        <iframe id="proxyFrame"></iframe>
+
+    </div>
 </div>
 
 <!-- SETTINGS -->
 <div id="settingsApp">
-    <div id="settingsTop">
-        <div>SETTINGS</div>
-        <div onclick="closeSettings()" style="color:red;cursor:pointer;">EXIT</div>
-    </div>
+    <div class="window" id="settingsWindow">
 
-    <div id="settingsBody">
-
-        <div class="setting">
-            <label>Tab Disguise Name</label>
-            <input id="tabName">
-            <button onclick="applyDisguise()">Apply</button>
+        <div class="windowTop">
+            <div>Settings</div>
+            <div class="closeBtn" onclick="closeSettings()">✕</div>
         </div>
 
-        <div class="setting">
-            <label>Quick Redirect URL (Ctrl+Shift+Q)</label>
-            <input id="redirectUrl">
+        <div class="settingsGrid">
+
+            <div class="card">
+                <h3>Tab Disguise</h3>
+                <input id="tabName" placeholder="Fake tab name">
+                <button onclick="applyDisguise()">Apply</button>
+            </div>
+
+            <div class="card">
+                <h3>Redirect Key (\)</h3>
+                <input id="redirectUrl" placeholder="https://example.com">
+            </div>
+
         </div>
 
     </div>
@@ -325,7 +333,7 @@ input{
 
 <script>
 
-/* BOOT */
+/* ENTER */
 document.getElementById("enter").onclick=()=>{
     let boot=document.getElementById("boot");
     boot.style.opacity="0";
@@ -338,34 +346,16 @@ document.getElementById("enter").onclick=()=>{
     },800);
 };
 
-/* VIDEO END */
 document.getElementById("video").onended=()=>{
     document.getElementById("video").style.display="none";
     document.getElementById("desktop").style.opacity="1";
 };
 
-/* ENTER SKIP */
-let press=0;
-document.addEventListener("keydown",e=>{
-    if(e.key==="Enter"){
-        press++;
-        setTimeout(()=>press=0,400);
-        if(press===2){
-            let v=document.getElementById("video");
-            v.pause();
-            v.src="";
-            v.style.display="none";
-            document.getElementById("desktop").style.opacity="1";
-        }
-    }
-
-    /* HOTKEY REDIRECT */
-    if(e.ctrlKey && e.shiftKey && e.key.toLowerCase()==="q"){
-        let url=document.getElementById("redirectUrl").value;
-        if(!url) return;
-        if(!url.startsWith("http")) url="https://"+url;
-        window.location.href=url;
-    }
+/* BACKGROUND MOUSE MOVE */
+document.addEventListener("mousemove",(e)=>{
+    let mx=(e.clientX/window.innerWidth-0.5)*2;
+    let my=(e.clientY/window.innerHeight-0.5)*2;
+    document.body.style.backgroundPosition=`${50+mx*5}% ${50+my*5}%`;
 });
 
 /* CLOCK */
@@ -379,24 +369,72 @@ function tick(){
 setInterval(tick,1000);
 tick();
 
-/* PROXY */
-function openProxy(){proxyApp.style.display="block";}
-function closeProxy(){proxyApp.style.display="none";}
+/* PROXY OPEN ANIMATION */
+function openProxy(){
+    proxyApp.style.display="block";
+    setTimeout(()=>proxyWindow.classList.add("open"),10);
+    proxyFrame.src="https://google.com";
+}
+
+function closeProxy(){
+    proxyWindow.classList.remove("open");
+    setTimeout(()=>proxyApp.style.display="none",200);
+}
+
 function goProxy(){
     let q=proxyUrl.value;
-    if(!q) return proxyFrame.src="https://google.com";
+    if(!q) return;
     if(!q.includes(".")) q="https://google.com/search?q="+encodeURIComponent(q);
     proxyFrame.src=q.startsWith("http")?q:"https://"+q;
 }
 
-/* SETTINGS */
-function openSettings(){settingsApp.style.display="block";}
-function closeSettings(){settingsApp.style.display="none";}
+/* SETTINGS OPEN ANIMATION */
+function openSettings(){
+    settingsApp.style.display="block";
+    setTimeout(()=>settingsWindow.classList.add("open"),10);
+}
 
+function closeSettings(){
+    settingsWindow.classList.remove("open");
+    setTimeout(()=>settingsApp.style.display="none",200);
+}
+
+/* DISGUISE */
 function applyDisguise(){
     let name=document.getElementById("tabName").value;
     if(name) document.title=name;
 }
+
+/* KEYBINDS */
+let tabState=0;
+
+document.addEventListener("keydown",(e)=>{
+
+    /* ENTER SKIP */
+    if(e.key==="Enter"){
+        document.getElementById("video").style.display="none";
+        document.getElementById("desktop").style.opacity="1";
+    }
+
+    /* SWITCH APPS */
+    if(e.key==="\\"){
+        tabState=(tabState+1)%3;
+
+        if(tabState===0){
+            closeProxy();
+            closeSettings();
+        }
+        if(tabState===1){
+            openProxy();
+            closeSettings();
+        }
+        if(tabState===2){
+            openSettings();
+            closeProxy();
+        }
+    }
+
+});
 
 </script>
 
