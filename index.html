@@ -52,6 +52,7 @@ body{
     font-size:12px;
     letter-spacing:3px;
     color:rgba(255,255,255,0.6);
+    cursor:pointer;
 }
 
 /* ---------- VIDEO ---------- */
@@ -64,19 +65,6 @@ body{
     display:none;
     filter:grayscale(100%) contrast(1.2);
     z-index:500;
-}
-
-#skip{
-    position:fixed;
-    top:12px;
-    right:12px;
-    display:none;
-    z-index:600;
-    padding:8px 12px;
-    background:#000;
-    border:1px solid var(--soft);
-    color:white;
-    font-size:12px;
 }
 
 /* ---------- DESKTOP ---------- */
@@ -136,7 +124,7 @@ body{
     cursor:pointer;
 }
 
-/* ---------- PROXY SYSTEM ---------- */
+/* ---------- PROXY (REDESIGNED UI) ---------- */
 #proxyApp{
     position:fixed;
     inset:0;
@@ -146,42 +134,55 @@ body{
 }
 
 #proxyTop{
-    height:40px;
+    height:42px;
     display:flex;
     justify-content:space-between;
     align-items:center;
-    padding:0 12px;
+    padding:0 14px;
     border-bottom:1px solid var(--soft);
     font-size:12px;
+    letter-spacing:1px;
+}
+
+#proxyTop span{
+    color:var(--red);
 }
 
 #proxyBar{
     display:flex;
-    gap:8px;
-    padding:10px;
+    gap:10px;
+    padding:12px;
+    border-bottom:1px solid rgba(255,42,42,0.1);
 }
 
 #proxyBar input{
     flex:1;
-    padding:8px;
-    background:#000;
+    padding:10px;
+    background:#050505;
     border:1px solid var(--soft);
     color:white;
     outline:none;
+    font-size:12px;
 }
 
 #proxyBar button{
     background:#000;
     border:1px solid var(--soft);
     color:white;
-    padding:8px 12px;
+    padding:10px 14px;
     cursor:pointer;
+    transition:0.2s;
+}
+
+#proxyBar button:hover{
+    border-color:var(--red);
 }
 
 #proxyFrame{
     width:100%;
-    height:100%;
+    height:calc(100% - 85px);
     border:none;
+    background:#000;
 }
 </style>
 </head>
@@ -191,15 +192,13 @@ body{
 <!-- BOOT -->
 <div id="boot">
     <h1>ORBITAL OS</h1>
-    <div id="enter">DOUBLE CLICK TO ENTER SYSTEM</div>
+    <div id="enter">CLICK TO ENTER SYSTEM</div>
 </div>
 
 <!-- VIDEO -->
-<video id="video">
+<video id="video" muted>
     <source src="video.mp4" type="video/mp4">
 </video>
-
-<button id="skip" onclick="skip()">SKIP</button>
 
 <!-- DESKTOP -->
 <div id="desktop">
@@ -213,16 +212,15 @@ body{
 
     <div id="dock">
         <div class="dock-app" onclick="openProxy()">🌐</div>
-        <div class="dock-app" onclick="openApp()">⚙️</div>
     </div>
 
 </div>
 
-<!-- ORBITAL'S PROXY -->
+<!-- PROXY -->
 <div id="proxyApp">
 
     <div id="proxyTop">
-        <div>ORBITAL'S PROXY</div>
+        <div><span>ORBITAL</span> PROXY</div>
         <div onclick="closeProxy()" style="cursor:pointer;color:#ff2a2a;">EXIT</div>
     </div>
 
@@ -237,62 +235,74 @@ body{
 
 <script>
 
-let clicks=0;
+let videoStarted=false;
+let enterPress=0;
 
-/* BOOT */
+/* SINGLE CLICK START */
 document.getElementById("enter").onclick=()=>{
-    clicks++;
-    setTimeout(()=>clicks=0,400);
-    if(clicks===2) start();
+    startSystem();
 };
 
-function start(){
+function startSystem(){
+    if(videoStarted) return;
+    videoStarted=true;
+
     document.getElementById("boot").style.display="none";
 
     const v=document.getElementById("video");
-    const skip=document.getElementById("skip");
 
     v.style.display="block";
-    skip.style.display="block";
-
+    v.muted=true;   // FIX: no audio issue
     v.play();
 }
 
-/* SKIP */
-function skip(){
-    document.getElementById("video").style.display="none";
-    document.getElementById("skip").style.display="none";
+/* DOUBLE ENTER SKIP VIDEO */
+document.addEventListener("keydown",(e)=>{
+    if(e.key==="Enter" && videoStarted){
+        enterPress++;
+
+        setTimeout(()=>enterPress=0,500);
+
+        if(enterPress===2){
+            skipVideo();
+        }
+    }
+});
+
+function skipVideo(){
+    const v=document.getElementById("video");
+
+    v.pause();
+    v.removeAttribute("src");
+    v.load();
+
+    v.style.display="none";
     document.getElementById("desktop").style.opacity="1";
 }
 
 /* END VIDEO */
 document.getElementById("video").onended=()=>{
     document.getElementById("video").style.display="none";
-    document.getElementById("skip").style.display="none";
     document.getElementById("desktop").style.opacity="1";
 };
 
-/* APP */
-function openApp(){
-    alert("System placeholder");
-}
-
-/* OPEN PROXY */
+/* PROXY OPEN */
 function openProxy(){
     document.getElementById("proxyApp").style.display="block";
     document.getElementById("desktop").style.opacity="0";
+
     document.getElementById("proxyFrame").src="https://www.google.com";
 }
 
-/* CLOSE PROXY */
+/* CLOSE */
 function closeProxy(){
     document.getElementById("proxyApp").style.display="none";
     document.getElementById("desktop").style.opacity="1";
 }
 
-/* GOOGLE NAV */
+/* GOOGLE + URL HANDLER */
 function goProxy(){
-    let q=document.getElementById("proxyUrl").value;
+    let q=document.getElementById("proxyUrl").value.trim();
     let frame=document.getElementById("proxyFrame");
 
     if(!q){
