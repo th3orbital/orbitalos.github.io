@@ -7,11 +7,8 @@
 
 <style>
 :root {
-    --bg:#000;
     --red:#ff2a2a;
     --red-soft:rgba(255,42,42,0.25);
-    --text:rgba(255,255,255,0.92);
-    --dim:rgba(255,255,255,0.45);
 }
 
 * {
@@ -25,11 +22,11 @@
 body {
     height:100vh;
     overflow:hidden;
-    background: radial-gradient(circle at 50% 30%, #111 0%, #050505 45%, #000 100%);
+    background:#000;
     color:white;
 }
 
-/* ---------- BOOT ---------- */
+/* ---------- BOOT SCREEN ---------- */
 #boot {
     position:fixed;
     inset:0;
@@ -43,26 +40,27 @@ body {
 
 #boot h1 {
     font-weight:100;
-    letter-spacing:30px;
+    letter-spacing:28px;
     font-size:3rem;
     color:var(--red);
     text-shadow:0 0 25px rgba(255,42,42,0.25);
 }
 
-#boot button {
+/* DOUBLE CLICK ENTER AREA */
+#enterArea {
     margin-top:40px;
-    padding:14px 55px;
-    background:transparent;
+    font-size:12px;
+    letter-spacing:4px;
+    color:rgba(255,255,255,0.5);
+    padding:20px 40px;
     border:1px solid var(--red-soft);
-    color:white;
-    letter-spacing:6px;
-    cursor:pointer;
+    cursor:default;
     transition:.3s;
 }
 
-#boot button:hover {
-    background:var(--red);
-    color:black;
+#enterArea:hover {
+    border-color:var(--red);
+    color:white;
 }
 
 /* ---------- VIDEO ---------- */
@@ -77,15 +75,31 @@ body {
     filter:grayscale(100%) contrast(1.2);
 }
 
+/* SKIP */
+#skip {
+    position:fixed;
+    top:15px;
+    right:15px;
+    z-index:600;
+    padding:8px 14px;
+    background:rgba(0,0,0,0.6);
+    border:1px solid var(--red-soft);
+    color:white;
+    font-size:12px;
+    letter-spacing:2px;
+    display:none;
+    cursor:pointer;
+}
+
 /* ---------- DESKTOP ---------- */
 #desktop {
     position:fixed;
     inset:0;
     opacity:0;
-    transition:1.2s;
+    transition:1s;
 }
 
-/* ---------- TOP BAR ---------- */
+/* TOP BAR */
 .topbar {
     position:absolute;
     top:0;
@@ -94,15 +108,13 @@ body {
     display:flex;
     justify-content:space-between;
     align-items:center;
-    padding:0 16px;
+    padding:0 14px;
     background:rgba(0,0,0,0.75);
-    backdrop-filter:blur(40px);
     border-bottom:1px solid var(--red-soft);
     font-size:12px;
-    letter-spacing:1px;
 }
 
-/* ---------- CLOCK ---------- */
+/* CLOCK */
 .center {
     position:absolute;
     top:32%;
@@ -120,66 +132,57 @@ body {
 #date {
     margin-top:10px;
     font-size:0.9rem;
-    letter-spacing:8px;
-    color:var(--dim);
+    letter-spacing:6px;
+    opacity:0.5;
 }
 
-/* ---------- APP GRID ---------- */
+/* APPS */
 .grid {
     position:absolute;
     top:55%;
     width:100%;
     display:flex;
     justify-content:center;
-    gap:70px;
+    gap:80px;
 }
 
 .app {
     display:flex;
     flex-direction:column;
     align-items:center;
-    gap:12px;
+    gap:10px;
 }
 
-/* ICON SYSTEM (no emojis, now clean SVG containers) */
 .icon {
     width:120px;
     height:120px;
     border-radius:28px;
-    background:rgba(255,255,255,0.03);
     border:1px solid var(--red-soft);
+    background:rgba(255,255,255,0.03);
     display:flex;
     align-items:center;
     justify-content:center;
     transition:.3s;
-    box-shadow:0 0 30px rgba(255,42,42,0.05);
 }
 
 .icon svg {
-    width:42px;
-    height:42px;
+    width:40px;
+    height:40px;
     stroke:var(--red);
-    stroke-width:1.5;
     fill:none;
-}
-
-.app:hover .icon {
-    transform:translateY(-10px) scale(1.08);
-    border-color:var(--red);
-    box-shadow:0 0 25px rgba(255,42,42,0.25),
-               0 40px 80px rgba(0,0,0,0.8);
+    stroke-width:1.5;
 }
 
 .app span {
     font-size:11px;
     letter-spacing:3px;
-    color:var(--dim);
+    color:rgba(255,255,255,0.6);
 }
 
-/* ---------- DOCK ---------- */
+/* DOCK */
 .dock {
     position:absolute;
-    bottom:24px;
+    bottom:25px;
     left:50%;
     transform:translateX(-50%);
     display:flex;
@@ -187,31 +190,15 @@ body {
     padding:12px 16px;
     border-radius:28px;
     background:rgba(0,0,0,0.7);
-    backdrop-filter:blur(50px);
     border:1px solid var(--red-soft);
 }
 
 .dock-item {
-    width:58px;
-    height:58px;
-    border-radius:16px;
+    width:60px;
+    height:60px;
     display:flex;
     align-items:center;
     justify-content:center;
-    transition:.25s;
-}
-
-.dock-item svg {
-    width:22px;
-    height:22px;
-    stroke:var(--red);
-    stroke-width:1.6;
-    fill:none;
-}
-
-.dock-item:hover {
-    transform:scale(1.3) translateY(-10px);
-    background:rgba(255,42,42,0.12);
 }
 </style>
 </head>
@@ -221,13 +208,17 @@ body {
 <!-- BOOT -->
 <div id="boot">
     <h1>ORBITAL OS</h1>
-    <button onclick="start()">ENTER ORBITAL OS</button>
+
+    <!-- DOUBLE CLICK AREA -->
+    <div id="enterArea">DOUBLE CLICK TO ENTER SYSTEM</div>
 </div>
 
 <!-- VIDEO -->
 <video id="video">
     <source src="video.mp4" type="video/mp4">
 </video>
+
+<button id="skip" onclick="skipVideo()">SKIP</button>
 
 <!-- DESKTOP -->
 <div id="desktop">
@@ -244,7 +235,6 @@ body {
 
     <div class="grid">
 
-        <!-- ARCade -->
         <div class="app">
             <div class="icon">
                 <svg viewBox="0 0 24 24">
@@ -255,7 +245,6 @@ body {
             <span>ORBITAL ARCADE</span>
         </div>
 
-        <!-- NET -->
         <div class="app">
             <div class="icon">
                 <svg viewBox="0 0 24 24">
@@ -266,7 +255,6 @@ body {
             <span>ORBITAL NET</span>
         </div>
 
-        <!-- SYSTEM -->
         <div class="app">
             <div class="icon">
                 <svg viewBox="0 0 24 24">
@@ -278,44 +266,56 @@ body {
 
     </div>
 
-    <div class="dock">
-
-        <div class="dock-item">
-            <svg viewBox="0 0 24 24">
-                <path d="M3 12l9-9 9 9"/>
-                <path d="M9 21V12h6v9"/>
-            </svg>
-        </div>
-
-        <div class="dock-item">
-            <svg viewBox="0 0 24 24">
-                <circle cx="12" cy="12" r="8"/>
-                <path d="M12 8v4l3 3"/>
-            </svg>
-        </div>
-
-        <div class="dock-item">
-            <svg viewBox="0 0 24 24">
-                <path d="M4 7h16M4 12h16M4 17h16"/>
-            </svg>
-        </div>
-
-    </div>
-
 </div>
 
 <script>
 
-function start() {
+let clickCount = 0;
+let clickTimer = null;
+
+/* DOUBLE CLICK LOGIC */
+document.getElementById("enterArea").addEventListener("click", () => {
+    clickCount++;
+
+    if (clickCount === 1) {
+        clickTimer = setTimeout(() => {
+            clickCount = 0;
+        }, 400);
+    }
+
+    if (clickCount === 2) {
+        clearTimeout(clickTimer);
+        startOS();
+        clickCount = 0;
+    }
+});
+
+function startOS() {
     document.getElementById("boot").style.display = "none";
 
     const v = document.getElementById("video");
+    const skip = document.getElementById("skip");
+
     v.style.display = "block";
+    skip.style.display = "block";
+
     v.play();
+}
+
+/* SKIP VIDEO */
+function skipVideo() {
+    const v = document.getElementById("video");
+
+    v.pause();
+    v.style.display = "none";
+
+    document.getElementById("skip").style.display = "none";
+    document.getElementById("desktop").style.opacity = "1";
 }
 
 document.getElementById("video").onended = () => {
     document.getElementById("video").style.display = "none";
+    document.getElementById("skip").style.display = "none";
     document.getElementById("desktop").style.opacity = "1";
 };
 
@@ -328,10 +328,8 @@ function tick() {
 
     h = h % 12 || 12;
 
-    const time = `${h}:${m}`;
-
-    document.getElementById("time").innerText = time;
-    document.getElementById("nav").innerText = time;
+    document.getElementById("time").innerText = `${h}:${m}`;
+    document.getElementById("nav").innerText = `${h}:${m}`;
 }
 
 setInterval(tick,1000);
