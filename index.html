@@ -3,71 +3,83 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Project</title>
+    <title>Orbital OS</title>
     <style>
-        /* Removes all margins and scrollbars */
+        /* General Setup */
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body, html { 
-            width: 100%; 
-            height: 100%; 
-            overflow: hidden; 
-            background-color: black; 
-            cursor: pointer; /* Shows the user they can click anywhere */
+            width: 100%; height: 100%; 
+            overflow: hidden; background: black; 
+            font-family: 'Courier New', Courier, monospace; 
         }
 
-        /* Makes the video full-screen and high quality */
+        /* Splash Screen (The Loading Page) */
+        #splash {
+            position: fixed; top: 0; left: 0; 
+            width: 100%; height: 100%;
+            display: flex; flex-direction: column;
+            justify-content: center; align-items: center;
+            z-index: 100; background: black;
+            transition: opacity 1s ease-out;
+        }
+
+        h1 {
+            color: cyan; font-size: 3rem;
+            letter-spacing: 10px; margin-bottom: 30px;
+            text-shadow: 0 0 15px cyan;
+        }
+
+        button {
+            padding: 15px 40px; font-size: 1.2rem;
+            background: transparent; border: 2px solid cyan;
+            color: cyan; cursor: pointer; border-radius: 5px;
+            font-family: inherit; transition: 0.3s;
+            text-transform: uppercase;
+        }
+
+        button:hover {
+            background: cyan; color: black;
+            box-shadow: 0 0 20px cyan;
+        }
+
+        /* The Video Container */
         #bg-video {
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            min-width: 100%;
-            min-height: 100%;
-            width: auto;
-            height: auto;
-            transform: translate(-50%, -50%);
+            position: fixed; top: 0; left: 0; 
+            width: 100vw; height: 100vh; 
             object-fit: cover;
-            z-index: 1;
-        }
-
-        /* Hidden text that only shows if the video fails */
-        .fallback {
-            color: white;
-            text-align: center;
-            padding-top: 20%;
-            font-family: sans-serif;
-            z-index: 0;
+            display: none; /* Stays hidden until enter is clicked */
         }
     </style>
 </head>
 <body>
 
-    <video id="bg-video" loop playsinline muted preload="auto">
+    <div id="splash">
+        <h1>ORBITAL OS</h1>
+        <button onclick="bootSystem()">Enter System</button>
+    </div>
+
+    <video id="bg-video" loop playsinline>
         <source src="video.mp4" type="video/mp4">
     </video>
 
-    <div class="fallback">Click anywhere to start the video.</div>
-
     <script>
-        const video = document.getElementById('bg-video');
+        function bootSystem() {
+            const v = document.getElementById('bg-video');
+            const s = document.getElementById('splash');
 
-        // FUNCTION TO START VIDEO
-        function playVid() {
-            video.play();
-            // Remove the fallback text once playing
-            document.querySelector('.fallback').style.display = 'none';
+            // 1. Show the video
+            v.style.display = "block";
+
+            // 2. Unmute and Play (Browser allows this because of the button click)
+            v.muted = false;
+            v.play();
+
+            // 3. Fade out the splash screen
+            s.style.opacity = "0";
+            setTimeout(() => {
+                s.style.display = "none";
+            }, 1000);
         }
-
-        // 1. Try to autoplay immediately
-        window.addEventListener('load', () => {
-            video.play().catch(() => {
-                console.log("Autoplay blocked - waiting for click.");
-            });
-        });
-
-        // 2. The "Start" Trigger: Click anywhere on the screen to play
-        document.body.addEventListener('click', playVid);
-        document.body.addEventListener('touchstart', playVid);
     </script>
-
 </body>
 </html>
