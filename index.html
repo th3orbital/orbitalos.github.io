@@ -5,81 +5,114 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Orbital OS</title>
     <style>
-        /* General Setup */
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body, html { 
             width: 100%; height: 100%; 
             overflow: hidden; background: black; 
-            font-family: 'Courier New', Courier, monospace; 
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
         }
 
-        /* Splash Screen (The Loading Page) */
+        /* 1. Splash Screen */
         #splash {
-            position: fixed; top: 0; left: 0; 
+            position: fixed; z-index: 100;
             width: 100%; height: 100%;
             display: flex; flex-direction: column;
             justify-content: center; align-items: center;
-            z-index: 100; background: black;
-            transition: opacity 1s ease-out;
+            background: black; transition: opacity 0.8s;
+        }
+        #splash h1 { color: white; letter-spacing: 5px; margin-bottom: 20px; font-weight: 200; }
+        #splash button { 
+            padding: 12px 30px; background: white; border: none; 
+            border-radius: 20px; cursor: pointer; font-weight: 600;
         }
 
-        h1 {
-            color: cyan; font-size: 3rem;
-            letter-spacing: 10px; margin-bottom: 30px;
-            text-shadow: 0 0 15px cyan;
+        /* 2. Intro Video */
+        #intro-vid {
+            position: fixed; top: 0; left: 0;
+            width: 100vw; height: 100vh;
+            object-fit: cover; display: none; z-index: 50;
         }
 
-        button {
-            padding: 15px 40px; font-size: 1.2rem;
-            background: transparent; border: 2px solid cyan;
-            color: cyan; cursor: pointer; border-radius: 5px;
-            font-family: inherit; transition: 0.3s;
-            text-transform: uppercase;
+        /* 3. Apple Style Home Screen */
+        #home-screen {
+            position: fixed; top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: linear-gradient(135deg, #83a4d4, #b6fbff); /* Classic Apple-style gradient */
+            display: flex; flex-direction: column;
+            align-items: center; opacity: 0; z-index: 10;
+            transition: opacity 1.5s ease-in;
         }
 
-        button:hover {
-            background: cyan; color: black;
-            box-shadow: 0 0 20px cyan;
+        #home-screen h2 { margin-top: 100px; color: white; font-size: 2.5rem; text-shadow: 0 2px 10px rgba(0,0,0,0.2); }
+
+        /* The "Dock" at the bottom */
+        .dock {
+            position: absolute; bottom: 20px;
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(15px);
+            padding: 10px 20px; border-radius: 20px;
+            display: flex; gap: 20px;
+            border: 1px solid rgba(255,255,255,0.3);
         }
 
-        /* The Video Container */
-        #bg-video {
-            position: fixed; top: 0; left: 0; 
-            width: 100vw; height: 100vh; 
-            object-fit: cover;
-            display: none; /* Stays hidden until enter is clicked */
+        .icon {
+            width: 50px; height: 50px;
+            background: white; border-radius: 12px;
+            display: flex; justify-content: center; align-items: center;
+            font-size: 1.5rem; cursor: pointer; transition: 0.2s;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
         }
+        .icon:hover { transform: translateY(-10px); }
+
     </style>
 </head>
 <body>
 
     <div id="splash">
-        <h1>ORBITAL OS</h1>
-        <button onclick="bootSystem()">Enter System</button>
+        <h1>ORBITAL</h1>
+        <button onclick="startSequence()">Enter</button>
     </div>
 
-    <video id="bg-video" loop playsinline>
+    <video id="intro-vid">
         <source src="video.mp4" type="video/mp4">
     </video>
 
+    <div id="home-screen">
+        <h2>Welcome to Orbital</h2>
+        
+        <div class="dock">
+            <div class="icon">🎮</div>
+            <div class="icon">🌐</div>
+            <div class="icon">⚙️</div>
+        </div>
+    </div>
+
     <script>
-        function bootSystem() {
-            const v = document.getElementById('bg-video');
-            const s = document.getElementById('splash');
+        const splash = document.getElementById('splash');
+        const video = document.getElementById('intro-vid');
+        const home = document.getElementById('home-screen');
 
-            // 1. Show the video
-            v.style.display = "block";
+        function startSequence() {
+            // Hide splash, show and play video
+            splash.style.opacity = "0";
+            setTimeout(() => { splash.style.display = "none"; }, 800);
 
-            // 2. Unmute and Play (Browser allows this because of the button click)
-            v.muted = false;
-            v.play();
-
-            // 3. Fade out the splash screen
-            s.style.opacity = "0";
-            setTimeout(() => {
-                s.style.display = "none";
-            }, 1000);
+            video.style.display = "block";
+            video.muted = false;
+            video.play();
         }
+
+        // Detect when the video finishes
+        video.onended = function() {
+            // Fade out video
+            video.style.transition = "opacity 1s";
+            video.style.opacity = "0";
+            
+            // Show Home Screen
+            home.style.opacity = "1";
+            
+            setTimeout(() => { video.style.display = "none"; }, 1000);
+        };
     </script>
 </body>
 </html>
