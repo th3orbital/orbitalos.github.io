@@ -20,7 +20,6 @@
     user-select:none;
 }
 
-/* 🌌 BASE */
 body{
     height:100vh;
     overflow:hidden;
@@ -28,7 +27,7 @@ body{
     color:white;
 }
 
-/* CANVAS BACKGROUND */
+/* 🌌 STAR CANVAS */
 #space{
     position:fixed;
     inset:0;
@@ -111,6 +110,48 @@ body{
     color:var(--main);
 }
 
+/* 🧠 WIDGETS */
+#widgets{
+    position:absolute;
+    left:20px;
+    top:80px;
+    display:flex;
+    flex-direction:column;
+    gap:12px;
+    width:260px;
+}
+
+.widget{
+    padding:12px;
+    background:rgba(0,0,0,0.35);
+    border:1px solid var(--soft);
+    backdrop-filter: blur(12px);
+    border-radius:10px;
+    color:var(--main);
+    animation:float 6s ease-in-out infinite;
+}
+
+.widget:nth-child(2){animation-delay:1s;}
+.widget:nth-child(3){animation-delay:2s;}
+
+@keyframes float{
+    0%,100%{transform:translateY(0);}
+    50%{transform:translateY(-6px);}
+}
+
+.wTitle{
+    font-size:10px;
+    opacity:0.7;
+    margin-bottom:6px;
+    letter-spacing:2px;
+}
+
+.wText{
+    font-size:12px;
+    color:white;
+    opacity:0.85;
+}
+
 /* DOCK */
 #dock{
     position:absolute;
@@ -135,7 +176,7 @@ body{
     cursor:pointer;
 }
 
-/* ICONS (UNCHANGED VISUALLY) */
+/* ICONS (UNCHANGED) */
 .dock-app svg{
     width:28px;
     height:28px;
@@ -147,7 +188,7 @@ body{
 }
 
 .dock-app:hover svg{
-    transform:scale(1.12);
+    transform:scale(1.1);
     filter: drop-shadow(0 0 14px rgba(139,92,255,0.8));
 }
 
@@ -159,7 +200,6 @@ body{
     flex-direction:column;
     background:rgba(5,5,15,0.85);
     backdrop-filter: blur(18px);
-
     transform:scale(0.85);
     opacity:0;
     transition:0.25s ease;
@@ -186,7 +226,7 @@ body{
     cursor:pointer;
 }
 
-/* PROXY (UNCHANGED STRUCTURE) */
+/* PROXY */
 .windowBar{
     display:flex;
     gap:8px;
@@ -210,12 +250,6 @@ body{
     cursor:pointer;
 }
 
-iframe{
-    width:100%;
-    height:100%;
-    border:none;
-}
-
 /* SETTINGS */
 .settingsGrid{
     display:grid;
@@ -228,10 +262,10 @@ iframe{
     padding:12px;
     border:1px solid var(--soft);
     background:rgba(0,0,0,0.4);
+    color:var(--main);
     display:flex;
     flex-direction:column;
     gap:8px;
-    color:var(--main);
 }
 
 .card input{
@@ -257,6 +291,12 @@ iframe{
     z-index:2000;
 }
 
+/* CANVAS */
+#space{
+    position:fixed;
+    inset:0;
+    z-index:-1;
+}
 </style>
 </head>
 
@@ -264,18 +304,15 @@ iframe{
 
 <canvas id="space"></canvas>
 
-<!-- BOOT -->
 <div id="boot">
     <h1>ORBITAL OS</h1>
     <div id="enter">ENTER SYSTEM</div>
 </div>
 
-<!-- VIDEO -->
 <video id="video" muted>
     <source src="video.mp4" type="video/mp4">
 </video>
 
-<!-- DESKTOP -->
 <div id="desktop">
 
     <div class="topbar">
@@ -285,10 +322,27 @@ iframe{
 
     <div id="time">0:00</div>
 
+    <!-- 🧠 HOME WIDGETS -->
+    <div id="widgets">
+        <div class="widget">
+            <div class="wTitle">SYSTEM STATUS</div>
+            <div class="wText" id="sysStatus"></div>
+        </div>
+
+        <div class="widget">
+            <div class="wTitle">UNIVERSE SIGNAL</div>
+            <div class="wText" id="signal"></div>
+        </div>
+
+        <div class="widget">
+            <div class="wTitle">QUOTE</div>
+            <div class="wText" id="quote"></div>
+        </div>
+    </div>
+
     <div id="dock">
 
         <div class="dock-app" onclick="openProxy()">
-            <!-- PROXY ICON (UNCHANGED) -->
             <svg viewBox="0 0 24 24">
                 <circle cx="12" cy="12" r="9"></circle>
                 <path d="M3 12h18"></path>
@@ -297,7 +351,6 @@ iframe{
         </div>
 
         <div class="dock-app" onclick="openSettings()">
-            <!-- SETTINGS ICON (UNCHANGED) -->
             <svg viewBox="0 0 24 24">
                 <path d="M12 15.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7z"></path>
                 <path d="M19 12h2"></path>
@@ -339,7 +392,6 @@ iframe{
         </div>
 
         <div class="settingsGrid">
-
             <div class="card">
                 <h3>Tab Name</h3>
                 <input id="tabName">
@@ -350,7 +402,6 @@ iframe{
                 <h3>Redirect (\)</h3>
                 <input id="redirectUrl">
             </div>
-
         </div>
 
     </div>
@@ -358,7 +409,7 @@ iframe{
 
 <script>
 
-/* ENTER FIX */
+/* ENTER */
 document.getElementById("enter").onclick=()=>{
     boot.style.opacity="0";
     setTimeout(()=>{
@@ -375,7 +426,7 @@ video.onended=()=>{
     desktop.style.opacity="1";
 };
 
-/* 🌌 STARFIELD */
+/* 🌌 SPACE ENGINE */
 const canvas=document.getElementById("space");
 const ctx=canvas.getContext("2d");
 
@@ -398,7 +449,7 @@ document.addEventListener("mousemove",(e)=>{
     my=(e.clientY/window.innerHeight-0.5)*2;
 });
 
-function spawn(){
+setInterval(()=>{
     shooting.push({
         x:Math.random()*canvas.width,
         y:Math.random()*canvas.height/2,
@@ -406,8 +457,7 @@ function spawn(){
         vy:2+Math.random()*2,
         life:60
     });
-}
-setInterval(spawn,2500);
+},2500);
 
 function draw(){
     ctx.clearRect(0,0,canvas.width,canvas.height);
@@ -446,6 +496,24 @@ function draw(){
 }
 draw();
 
+/* WIDGETS */
+const quotes=[
+"Made of stardust and systems.",
+"Orbit beyond the visible.",
+"The void is not empty — it is data.",
+"Everything moves in silence.",
+];
+
+quote.innerText=quotes[Math.floor(Math.random()*quotes.length)];
+
+function update(){
+    let h=new Date().getHours();
+    sysStatus.innerText = h<12?"MORNING SECTOR ONLINE":"NIGHT SECTOR ACTIVE";
+    signal.innerText = Math.random()>0.5?"CLEAR SIGNAL":"MINOR INTERFERENCE";
+}
+setInterval(update,4000);
+update();
+
 /* CLOCK */
 setInterval(()=>{
     let d=new Date();
@@ -474,7 +542,6 @@ document.addEventListener("keydown",(e)=>{
         if(state===2){openSettings();closeProxy();}
     }
 });
-
 </script>
 
 </body>
