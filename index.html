@@ -7,195 +7,141 @@
 
 <style>
 :root{
-    --main:#a855f7;
-    --accent:#6d28d9;
-    --soft:rgba(168,85,247,0.25);
+  --main:#a855f7;
+  --bg:#05010a;
+  --glass:rgba(20,10,40,0.6);
+  --border:rgba(168,85,247,0.3);
 }
 
 *{
-    margin:0;
-    padding:0;
-    box-sizing:border-box;
-    font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display",sans-serif;
-    user-select:none;
+  margin:0;
+  padding:0;
+  box-sizing:border-box;
+  font-family:-apple-system,BlinkMacSystemFont,sans-serif;
 }
 
 body{
-    height:100vh;
-    overflow:hidden;
-    background:#000;
-    color:white;
+  background:var(--bg);
+  color:white;
+  overflow:hidden;
+}
+
+/* SCREENS */
+.screen{
+  position:fixed;
+  inset:0;
+  display:flex;
+  justify-content:center;
+  align-items:center;
 }
 
 /* DISCLAIMER */
 #disclaimer{
-    position:fixed;
-    inset:0;
-    display:flex;
-    justify-content:center;
-    align-items:center;
-    background:rgba(0,0,0,0.88);
-    z-index:9999;
+  background:black;
+  flex-direction:column;
+  text-align:center;
 }
 
-.discBox{
-    width:340px;
-    padding:20px;
-    border:1px solid var(--soft);
-    background:rgba(0,0,0,0.75);
-    backdrop-filter: blur(14px);
-    text-align:center;
-    color:var(--main);
-}
-
-.discBox button{
-    margin-top:14px;
-    padding:10px 16px;
-    background:transparent;
-    border:1px solid var(--soft);
-    color:var(--main);
-    cursor:pointer;
+#disclaimer button{
+  margin-top:20px;
+  padding:10px 20px;
+  border:1px solid var(--border);
+  background:none;
+  color:var(--main);
+  cursor:pointer;
 }
 
 /* BOOT */
 #boot{
-    position:fixed;
-    inset:0;
-    display:none;
-    justify-content:center;
-    align-items:center;
-    flex-direction:column;
-    background:#000;
+  display:none;
+  flex-direction:column;
 }
 
 #boot h1{
-    letter-spacing:22px;
-    font-size:3rem;
-    color:var(--main);
+  letter-spacing:20px;
+  color:var(--main);
 }
 
-#enter{
-    margin-top:40px;
-    padding:14px 40px;
-    border:1px solid var(--soft);
-    cursor:pointer;
+#boot button{
+  margin-top:30px;
+  padding:12px 30px;
+  border:1px solid var(--border);
+  background:none;
+  color:var(--main);
+  cursor:pointer;
 }
 
 /* VIDEO */
-#video{
-    position:fixed;
-    inset:0;
-    width:100%;
-    height:100%;
-    object-fit:cover;
-    display:none;
-    z-index:500;
+#videoScreen{
+  display:none;
+  background:black;
 }
 
-/* SKIP TEXT */
-#skipHint{
-    position:fixed;
-    bottom:20px;
-    width:100%;
-    text-align:center;
-    font-size:12px;
-    color:var(--main);
-    opacity:0.7;
-    display:none;
+video{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+}
+
+#skip{
+  position:absolute;
+  bottom:20px;
+  width:100%;
+  text-align:center;
+  color:var(--main);
+  font-size:12px;
+  opacity:0.7;
 }
 
 /* DESKTOP */
 #desktop{
-    position:fixed;
-    inset:0;
-    opacity:0;
-    transition:1s;
+  display:none;
+  flex-direction:column;
 }
 
-/* TOPBAR */
+/* TOP BAR */
 .topbar{
-    position:absolute;
-    top:0;
-    width:100%;
-    height:34px;
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
-    padding:0 12px;
-    background:rgba(0,0,0,0.6);
-    border-bottom:1px solid var(--soft);
-    color:var(--main);
+  height:34px;
+  display:flex;
+  justify-content:space-between;
+  padding:0 12px;
+  background:var(--glass);
+  border-bottom:1px solid var(--border);
+  align-items:center;
 }
 
 /* CLOCK */
-#time{
-    position:absolute;
-    top:28%;
-    width:100%;
-    text-align:center;
-    font-size:9rem;
-    color:var(--main);
-}
-
-/* WIDGETS */
-#widgets{
-    position:absolute;
-    left:20px;
-    top:80px;
-    display:flex;
-    flex-direction:column;
-    gap:12px;
-    width:260px;
-}
-
-.widget{
-    padding:12px;
-    background:rgba(0,0,0,0.35);
-    border:1px solid var(--soft);
-    backdrop-filter: blur(12px);
-}
-
-.wTitle{
-    font-size:10px;
-    opacity:0.7;
-    margin-bottom:6px;
-    letter-spacing:2px;
-}
-
-.wText{
-    font-size:12px;
-    opacity:0.85;
+#clock{
+  flex:1;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  font-size:80px;
+  color:var(--main);
 }
 
 /* DOCK */
-#dock{
-    position:absolute;
-    bottom:18px;
-    left:50%;
-    transform:translateX(-50%);
-    display:flex;
-    gap:14px;
-    padding:10px 14px;
-    border-radius:18px;
-    background:rgba(0,0,0,0.6);
-    border:1px solid var(--soft);
+.dock{
+  position:absolute;
+  bottom:20px;
+  left:50%;
+  transform:translateX(-50%);
+  display:flex;
+  gap:20px;
+  padding:10px 20px;
+  background:var(--glass);
+  border:1px solid var(--border);
+  border-radius:20px;
 }
 
-.dock-app{
-    width:60px;
-    height:60px;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    cursor:pointer;
-}
-
-.dock-app svg{
-    width:28px;
-    height:28px;
-    stroke:var(--main);
-    fill:none;
-    stroke-width:1.4;
+.app{
+  width:50px;
+  height:50px;
+  border:1px solid var(--border);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  cursor:pointer;
 }
 </style>
 </head>
@@ -203,130 +149,91 @@ body{
 <body>
 
 <!-- DISCLAIMER -->
-<div id="disclaimer">
-    <div class="discBox">
-        <p>
-            This site could be blocked at any time.<br><br>
-            Use at your own risk.
-        </p>
-        <button id="acceptBtn">ENTER</button>
-    </div>
+<div id="disclaimer" class="screen">
+  <div>
+    <p>This site could be blocked at any time.</p>
+    <p>Use at your own risk.</p>
+    <button id="accept">ENTER</button>
+  </div>
 </div>
 
 <!-- BOOT -->
-<div id="boot">
-    <h1>ORBITAL OS</h1>
-    <div id="enter">ENTER SYSTEM</div>
+<div id="boot" class="screen">
+  <h1>ORBITAL</h1>
+  <button id="start">START</button>
 </div>
 
 <!-- VIDEO -->
-<video id="video" muted playsinline>
+<div id="videoScreen" class="screen">
+  <video id="intro" muted>
     <source src="video.mp4" type="video/mp4">
-</video>
-
-<div id="skipHint">Press ENTER twice to skip</div>
+  </video>
+  <div id="skip">Press ENTER twice to skip</div>
+</div>
 
 <!-- DESKTOP -->
-<div id="desktop">
+<div id="desktop" class="screen">
 
-    <div class="topbar">
-        <div>ORBITAL SYSTEM</div>
-        <div id="nav"></div>
-    </div>
+  <div class="topbar">
+    <div>ORBITAL</div>
+    <div id="topClock"></div>
+  </div>
 
-    <div id="time">0:00</div>
+  <div id="clock"></div>
 
-    <div id="widgets">
-        <div class="widget">
-            <div class="wTitle">SYSTEM</div>
-            <div class="wText" id="sysStatus"></div>
-        </div>
-
-        <div class="widget">
-            <div class="wTitle">SIGNAL</div>
-            <div class="wText" id="signal"></div>
-        </div>
-
-        <div class="widget">
-            <div class="wTitle">QUOTE</div>
-            <div class="wText" id="quote"></div>
-        </div>
-    </div>
-
-    <div id="dock">
-        <div class="dock-app">
-            <svg viewBox="0 0 24 24">
-                <circle cx="12" cy="12" r="9"></circle>
-                <path d="M3 12h18"></path>
-                <path d="M12 3c3 4 3 14 0 18"></path>
-            </svg>
-        </div>
-    </div>
+  <div class="dock">
+    <div class="app">◎</div>
+  </div>
 
 </div>
 
 <script>
-
+const disclaimer = document.getElementById("disclaimer");
 const boot = document.getElementById("boot");
-const video = document.getElementById("video");
+const videoScreen = document.getElementById("videoScreen");
 const desktop = document.getElementById("desktop");
-const skipHint = document.getElementById("skipHint");
+const video = document.getElementById("intro");
 
-/* DISCLAIMER BUTTON */
-document.getElementById("acceptBtn").onclick = () => {
-    document.getElementById("disclaimer").style.display="none";
-    boot.style.display="flex";
+document.getElementById("accept").onclick = () => {
+  disclaimer.style.display="none";
+  boot.style.display="flex";
 };
 
-/* ENTER SYSTEM BUTTON */
-document.getElementById("enter").onclick = () => {
-    boot.style.display="none";
-
-    video.style.display="block";
-    skipHint.style.display="block";
-    video.play();
+document.getElementById("start").onclick = () => {
+  boot.style.display="none";
+  videoScreen.style.display="flex";
+  video.play();
 };
 
-/* DOUBLE ENTER SKIP */
-let press = 0;
-
-document.addEventListener("keydown", e => {
-    if(e.key === "Enter"){
-        press++;
-        setTimeout(() => press = 0, 400);
-
-        if(press === 2){
-            endVideo();
-        }
-    }
+/* SKIP SYSTEM */
+let count = 0;
+document.addEventListener("keydown", e=>{
+  if(e.key==="Enter"){
+    count++;
+    setTimeout(()=>count=0,400);
+    if(count===2) finish();
+  }
 });
 
 /* VIDEO END */
-video.onended = endVideo;
+video.onended = finish;
 
-function endVideo(){
-    video.pause();
-    video.style.display="none";
-    skipHint.style.display="none";
-    desktop.style.opacity="1";
+function finish(){
+  video.pause();
+  videoScreen.style.display="none";
+  desktop.style.display="flex";
 }
 
 /* CLOCK */
-function tick(){
-    let d=new Date();
-    let h=d.getHours()%12||12;
-    let m=d.getMinutes().toString().padStart(2,"0");
-    document.getElementById("time").innerText=`${h}:${m}`;
-    document.getElementById("nav").innerText=`${h}:${m}`;
+function updateTime(){
+  const d=new Date();
+  let h=d.getHours()%12||12;
+  let m=d.getMinutes().toString().padStart(2,"0");
+  document.getElementById("clock").innerText=`${h}:${m}`;
+  document.getElementById("topClock").innerText=`${h}:${m}`;
 }
-setInterval(tick,1000);
-tick();
-
-/* TEXT */
-document.getElementById("quote").innerText="Orbit beyond limits.";
-document.getElementById("sysStatus").innerText="ONLINE";
-document.getElementById("signal").innerText="CLEAR";
-
+setInterval(updateTime,1000);
+updateTime();
 </script>
 
 </body>
