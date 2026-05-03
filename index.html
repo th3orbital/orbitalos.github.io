@@ -2,8 +2,10 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Orbital OS</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<link id="favicon" rel="icon" href="">
 
 <style>
 :root{
@@ -13,17 +15,14 @@
   --border:rgba(168,85,247,0.3);
 }
 
-*{
-  margin:0;
-  padding:0;
-  box-sizing:border-box;
-  font-family:-apple-system,BlinkMacSystemFont,sans-serif;
-}
+*{margin:0;padding:0;box-sizing:border-box;font-family:sans-serif;}
+body{background:var(--bg);color:white;overflow:hidden;}
 
-body{
-  background:var(--bg);
-  color:white;
-  overflow:hidden;
+/* STAR CANVAS */
+#stars{
+  position:fixed;
+  inset:0;
+  z-index:-1;
 }
 
 /* SCREENS */
@@ -35,14 +34,9 @@ body{
   align-items:center;
 }
 
-/* DISCLAIMER */
-#disclaimer{
-  background:black;
-  flex-direction:column;
-  text-align:center;
-}
-
-#disclaimer button{
+/* BOOT */
+#boot{flex-direction:column;}
+button{
   margin-top:20px;
   padding:10px 20px;
   border:1px solid var(--border);
@@ -51,55 +45,14 @@ body{
   cursor:pointer;
 }
 
-/* BOOT */
-#boot{
-  display:none;
-  flex-direction:column;
-}
-
-#boot h1{
-  letter-spacing:20px;
-  color:var(--main);
-}
-
-#boot button{
-  margin-top:30px;
-  padding:12px 30px;
-  border:1px solid var(--border);
-  background:none;
-  color:var(--main);
-  cursor:pointer;
-}
-
 /* VIDEO */
-#videoScreen{
-  display:none;
-  background:black;
-}
-
-video{
-  width:100%;
-  height:100%;
-  object-fit:cover;
-}
-
-#skip{
-  position:absolute;
-  bottom:20px;
-  width:100%;
-  text-align:center;
-  color:var(--main);
-  font-size:12px;
-  opacity:0.7;
-}
+#videoScreen{display:none;background:black;}
+video{width:100%;height:100%;object-fit:cover;}
+#skip{position:absolute;bottom:20px;width:100%;text-align:center;color:var(--main);}
 
 /* DESKTOP */
-#desktop{
-  display:none;
-  flex-direction:column;
-}
+#desktop{display:none;flex-direction:column;}
 
-/* TOP BAR */
 .topbar{
   height:34px;
   display:flex;
@@ -107,16 +60,14 @@ video{
   padding:0 12px;
   background:var(--glass);
   border-bottom:1px solid var(--border);
-  align-items:center;
 }
 
-/* CLOCK */
 #clock{
   flex:1;
   display:flex;
   justify-content:center;
   align-items:center;
-  font-size:80px;
+  font-size:70px;
   color:var(--main);
 }
 
@@ -128,52 +79,69 @@ video{
   transform:translateX(-50%);
   display:flex;
   gap:20px;
-  padding:10px 20px;
+  padding:10px;
   background:var(--glass);
   border:1px solid var(--border);
   border-radius:20px;
 }
 
-.app{
-  width:50px;
-  height:50px;
+.app{cursor:pointer;}
+
+/* WINDOWS */
+.window{
+  position:absolute;
+  top:100px;
+  left:100px;
+  width:500px;
+  height:350px;
+  background:#000;
   border:1px solid var(--border);
+  display:none;
+  flex-direction:column;
+}
+
+.titlebar{
+  height:30px;
+  background:var(--glass);
   display:flex;
-  align-items:center;
-  justify-content:center;
-  cursor:pointer;
+  justify-content:space-between;
+  padding:5px;
+  cursor:move;
+}
+
+/* INPUT */
+input{
+  width:100%;
+  padding:6px;
+  background:#000;
+  border:1px solid var(--border);
+  color:white;
+}
+
+/* SETTINGS */
+.settings{
+  padding:10px;
 }
 </style>
 </head>
 
 <body>
 
-<!-- DISCLAIMER -->
-<div id="disclaimer" class="screen">
-  <div>
-    <p>This site could be blocked at any time.</p>
-    <p>Use at your own risk.</p>
-    <button id="accept">ENTER</button>
-  </div>
-</div>
+<canvas id="stars"></canvas>
 
-<!-- BOOT -->
 <div id="boot" class="screen">
   <h1>ORBITAL</h1>
   <button id="start">START</button>
 </div>
 
-<!-- VIDEO -->
 <div id="videoScreen" class="screen">
-  <video id="intro" muted>
-    <source src="video.mp4" type="video/mp4">
+  <video id="vid" muted>
+    <source src="video.mp4">
   </video>
   <div id="skip">Press ENTER twice to skip</div>
 </div>
 
-<!-- DESKTOP -->
 <div id="desktop" class="screen">
-
   <div class="topbar">
     <div>ORBITAL</div>
     <div id="topClock"></div>
@@ -182,58 +150,149 @@ video{
   <div id="clock"></div>
 
   <div class="dock">
-    <div class="app">◎</div>
+    <div class="app" onclick="openProxy()">🌐</div>
+    <div class="app" onclick="openSettings()">⚙️</div>
   </div>
+</div>
 
+<!-- PROXY WINDOW -->
+<div id="proxyWin" class="window">
+  <div class="titlebar">
+    <span>Proxy</span>
+    <span onclick="closeWin('proxyWin')">X</span>
+  </div>
+  <input id="url" placeholder="Enter URL or search">
+  <iframe id="frame" style="flex:1;border:none;"></iframe>
+</div>
+
+<!-- SETTINGS -->
+<div id="settingsWin" class="window">
+  <div class="titlebar">
+    <span>Settings</span>
+    <span onclick="closeWin('settingsWin')">X</span>
+  </div>
+  <div class="settings">
+    <input id="tabTitle" placeholder="Tab title">
+    <input id="tabIcon" placeholder="Favicon URL">
+    <input id="panicUrl" placeholder="Panic URL">
+
+    <button onclick="applyCloak()">Apply</button>
+  </div>
 </div>
 
 <script>
-const disclaimer = document.getElementById("disclaimer");
-const boot = document.getElementById("boot");
-const videoScreen = document.getElementById("videoScreen");
-const desktop = document.getElementById("desktop");
-const video = document.getElementById("intro");
 
-document.getElementById("accept").onclick = () => {
-  disclaimer.style.display="none";
-  boot.style.display="flex";
-};
-
-document.getElementById("start").onclick = () => {
+/* BOOT FLOW */
+start.onclick=()=>{
   boot.style.display="none";
   videoScreen.style.display="flex";
-  video.play();
+  vid.play();
 };
 
-/* SKIP SYSTEM */
-let count = 0;
-document.addEventListener("keydown", e=>{
+/* SKIP */
+let c=0;
+document.addEventListener("keydown",e=>{
   if(e.key==="Enter"){
-    count++;
-    setTimeout(()=>count=0,400);
-    if(count===2) finish();
+    c++; setTimeout(()=>c=0,400);
+    if(c===2) finish();
   }
 });
 
-/* VIDEO END */
-video.onended = finish;
+/* PANIC KEY */
+document.addEventListener("keydown",e=>{
+  if(e.key==="\\"){
+    let url=localStorage.panic||"https://google.com";
+    window.location.href=url;
+  }
+});
+
+vid.onended=finish;
 
 function finish(){
-  video.pause();
   videoScreen.style.display="none";
   desktop.style.display="flex";
 }
 
 /* CLOCK */
-function updateTime(){
-  const d=new Date();
-  let h=d.getHours()%12||12;
-  let m=d.getMinutes().toString().padStart(2,"0");
-  document.getElementById("clock").innerText=`${h}:${m}`;
-  document.getElementById("topClock").innerText=`${h}:${m}`;
+setInterval(()=>{
+  let d=new Date();
+  let t=`${d.getHours()%12||12}:${d.getMinutes().toString().padStart(2,"0")}`;
+  clock.innerText=t;
+  topClock.innerText=t;
+},1000);
+
+/* PROXY */
+function openProxy(){
+  proxyWin.style.display="flex";
 }
-setInterval(updateTime,1000);
-updateTime();
+function closeWin(id){
+  document.getElementById(id).style.display="none";
+}
+
+url.onchange=()=>{
+  let v=url.value;
+  frame.src=v.startsWith("http")?v:"https://www.google.com/search?q="+v;
+};
+
+/* SETTINGS */
+function openSettings(){
+  settingsWin.style.display="flex";
+}
+
+function applyCloak(){
+  document.title=tabTitle.value;
+  favicon.href=tabIcon.value;
+  localStorage.panic=panicUrl.value;
+}
+
+/* DRAG */
+document.querySelectorAll(".titlebar").forEach(bar=>{
+  let parent=bar.parentElement;
+  bar.onmousedown=e=>{
+    let x=e.clientX-parent.offsetLeft;
+    let y=e.clientY-parent.offsetTop;
+    document.onmousemove=e=>{
+      parent.style.left=e.clientX-x+"px";
+      parent.style.top=e.clientY-y+"px";
+    };
+    document.onmouseup=()=>document.onmousemove=null;
+  };
+});
+
+/* STARFIELD */
+const canvas=document.getElementById("stars");
+const ctx=canvas.getContext("2d");
+let w,h,stars=[];
+
+function resize(){
+  w=canvas.width=window.innerWidth;
+  h=canvas.height=window.innerHeight;
+}
+window.onresize=resize; resize();
+
+for(let i=0;i<150;i++){
+  stars.push({x:Math.random()*w,y:Math.random()*h,z:Math.random()*2});
+}
+
+let mx=0,my=0;
+document.onmousemove=e=>{
+  mx=(e.clientX-w/2)/50;
+  my=(e.clientY-h/2)/50;
+};
+
+function draw(){
+  ctx.clearRect(0,0,w,h);
+  stars.forEach(s=>{
+    s.y+=s.z;
+    if(s.y>h) s.y=0;
+
+    ctx.fillStyle="white";
+    ctx.fillRect(s.x+mx*s.z,s.y+my*s.z,2,2);
+  });
+  requestAnimationFrame(draw);
+}
+draw();
+
 </script>
 
 </body>
