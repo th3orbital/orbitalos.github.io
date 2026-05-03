@@ -7,9 +7,9 @@
 
 <style>
 :root{
-    --main:#7cf7ff;
-    --accent:#8b5cff;
-    --soft:rgba(124,247,255,0.25);
+    --main:#a855f7;
+    --accent:#6d28d9;
+    --soft:rgba(168,85,247,0.25);
 }
 
 *{
@@ -27,7 +27,7 @@ body{
     color:white;
 }
 
-/* ⚠️ WARNING */
+/* ⚠️ DISCLAIMER */
 #disclaimer{
     position:fixed;
     inset:0;
@@ -36,7 +36,6 @@ body{
     align-items:center;
     background:rgba(0,0,0,0.9);
     z-index:9999;
-    animation:fadeIn 0.3s ease forwards;
 }
 
 .discBox{
@@ -47,19 +46,6 @@ body{
     backdrop-filter: blur(14px);
     text-align:center;
     color:var(--main);
-    animation:popIn 0.4s ease;
-}
-
-.discBox h2{
-    font-weight:100;
-    letter-spacing:2px;
-    margin-bottom:10px;
-}
-
-.discBox p{
-    font-size:12px;
-    opacity:0.85;
-    line-height:1.5;
 }
 
 .discBox button{
@@ -71,26 +57,19 @@ body{
     cursor:pointer;
 }
 
-/* ANIMATIONS */
-@keyframes fadeIn{from{opacity:0;}to{opacity:1;}}
-@keyframes popIn{from{transform:scale(0.7);}to{transform:scale(1);}}
-
 /* BOOT */
 #boot{
     position:fixed;
     inset:0;
     display:none;
-    flex-direction:column;
     justify-content:center;
     align-items:center;
+    flex-direction:column;
     background:#000;
-    z-index:1000;
 }
 
 #boot h1{
-    font-weight:100;
     letter-spacing:20px;
-    font-size:3rem;
     color:var(--main);
 }
 
@@ -98,12 +77,10 @@ body{
     margin-top:40px;
     padding:14px 40px;
     border:1px solid var(--soft);
-    color:var(--main);
-    font-size:12px;
     cursor:pointer;
 }
 
-/* 🎬 VIDEO */
+/* VIDEO */
 #video{
     position:fixed;
     inset:0;
@@ -114,6 +91,18 @@ body{
     z-index:500;
 }
 
+/* SKIP TEXT */
+#skip{
+    position:fixed;
+    bottom:20px;
+    width:100%;
+    text-align:center;
+    font-size:12px;
+    color:var(--main);
+    opacity:0.7;
+    display:none;
+}
+
 /* DESKTOP */
 #desktop{
     position:fixed;
@@ -122,11 +111,8 @@ body{
     transition:1s;
 }
 
-/* TOP BAR */
+/* TOPBAR */
 .topbar{
-    position:absolute;
-    top:0;
-    width:100%;
     height:34px;
     display:flex;
     justify-content:space-between;
@@ -134,7 +120,6 @@ body{
     padding:0 12px;
     background:rgba(0,0,0,0.6);
     border-bottom:1px solid var(--soft);
-    font-size:12px;
     color:var(--main);
 }
 
@@ -145,112 +130,82 @@ body{
     width:100%;
     text-align:center;
     font-size:9rem;
-    font-weight:100;
     color:var(--main);
-}
-
-/* DOCK */
-#dock{
-    position:absolute;
-    bottom:18px;
-    left:50%;
-    transform:translateX(-50%);
-    display:flex;
-    gap:14px;
-    padding:10px 14px;
-    border-radius:18px;
-    background:rgba(0,0,0,0.6);
-    border:1px solid var(--soft);
-}
-
-.dock-app{
-    width:60px;
-    height:60px;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    cursor:pointer;
-}
-
-.dock-app svg{
-    width:28px;
-    height:28px;
-    stroke:var(--main);
-    fill:none;
-    stroke-width:1.4;
 }
 </style>
 </head>
 
 <body>
 
-<!-- ⚠️ WARNING -->
 <div id="disclaimer">
     <div class="discBox">
-        <h2>SYSTEM WARNING</h2>
         <p>
             This site could be blocked at any time.<br><br>
-            Join the DC so you don’t miss out — DC not made yet.<br><br>
-            Use at your own risk — and have fun.
+            Use at your own risk.
         </p>
-        <button onclick="accept()">I Understand</button>
+        <button onclick="accept()">ENTER</button>
     </div>
 </div>
 
-<!-- BOOT -->
 <div id="boot">
-    <h1>ORBITAL OS</h1>
-    <div id="enter">ENTER SYSTEM</div>
+    <h1>ORBITAL</h1>
+    <div id="enter">START</div>
 </div>
 
-<!-- 🎬 VIDEO -->
 <video id="video" muted playsinline>
     <source src="video.mp4" type="video/mp4">
 </video>
 
-<!-- DESKTOP -->
-<div id="desktop">
+<div id="skip">PRESS ENTER TWICE TO SKIP</div>
 
+<div id="desktop">
     <div class="topbar">
-        <div>ORBITAL SYSTEM</div>
+        <div>ORBITAL</div>
         <div id="nav"></div>
     </div>
 
-    <div id="time">0:00</div>
-
-    <div id="dock">
-        <div class="dock-app">
-            <svg viewBox="0 0 24 24">
-                <circle cx="12" cy="12" r="9"></circle>
-                <path d="M3 12h18"></path>
-                <path d="M12 3c3 4 3 14 0 18"></path>
-            </svg>
-        </div>
-    </div>
-
+    <div id="time"></div>
 </div>
 
 <script>
 
-/* WARNING ACCEPT */
+/* ACCEPT */
 function accept(){
     disclaimer.style.display="none";
     boot.style.display="flex";
 }
 
-/* ENTER */
+/* START */
 enter.onclick=()=>{
     boot.style.display="none";
 
-    let v = document.getElementById("video");
-    v.style.display="block";
-    v.play();
-
-    /* show desktop AFTER video starts */
-    setTimeout(()=>{
-        desktop.style.opacity="1";
-    },500);
+    video.style.display="block";
+    skip.style.display="block";
+    video.play();
 };
+
+/* DOUBLE ENTER SKIP */
+let press=0;
+document.addEventListener("keydown",e=>{
+    if(e.key==="Enter"){
+        press++;
+        setTimeout(()=>press=0,400);
+
+        if(press===2){
+            endVideo();
+        }
+    }
+});
+
+/* VIDEO END */
+video.onended=endVideo;
+
+function endVideo(){
+    video.pause();
+    video.style.display="none";
+    skip.style.display="none";
+    desktop.style.opacity="1";
+}
 
 /* CLOCK */
 function tick(){
