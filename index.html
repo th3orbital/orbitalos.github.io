@@ -209,7 +209,7 @@ body{
             This site could be blocked at any time.<br><br>
             Use at your own risk.
         </p>
-        <button onclick="accept()">ENTER</button>
+        <button id="acceptBtn">ENTER</button>
     </div>
 </div>
 
@@ -267,14 +267,19 @@ body{
 
 <script>
 
-/* DISCLAIMER */
-function accept(){
-    disclaimer.style.display="none";
-    boot.style.display="flex";
-}
+const boot = document.getElementById("boot");
+const video = document.getElementById("video");
+const desktop = document.getElementById("desktop");
+const skipHint = document.getElementById("skipHint");
 
-/* START */
-enter.onclick=()=>{
+/* DISCLAIMER BUTTON */
+document.getElementById("acceptBtn").onclick = () => {
+    document.getElementById("disclaimer").style.display="none";
+    boot.style.display="flex";
+};
+
+/* ENTER SYSTEM BUTTON */
+document.getElementById("enter").onclick = () => {
     boot.style.display="none";
 
     video.style.display="block";
@@ -283,20 +288,20 @@ enter.onclick=()=>{
 };
 
 /* DOUBLE ENTER SKIP */
-let press=0;
+let press = 0;
 
-document.addEventListener("keydown",e=>{
-    if(e.key==="Enter"){
+document.addEventListener("keydown", e => {
+    if(e.key === "Enter"){
         press++;
-        setTimeout(()=>press=0,400);
+        setTimeout(() => press = 0, 400);
 
-        if(press===2){
+        if(press === 2){
             endVideo();
         }
     }
 });
 
-/* VIDEO END FIX */
+/* VIDEO END */
 video.onended = endVideo;
 
 function endVideo(){
@@ -311,16 +316,16 @@ function tick(){
     let d=new Date();
     let h=d.getHours()%12||12;
     let m=d.getMinutes().toString().padStart(2,"0");
-    time.innerText=`${h}:${m}`;
-    nav.innerText=`${h}:${m}`;
+    document.getElementById("time").innerText=`${h}:${m}`;
+    document.getElementById("nav").innerText=`${h}:${m}`;
 }
 setInterval(tick,1000);
 tick();
 
 /* TEXT */
-quote.innerText="Orbit beyond limits.";
-sysStatus.innerText="ONLINE";
-signal.innerText="CLEAR";
+document.getElementById("quote").innerText="Orbit beyond limits.";
+document.getElementById("sysStatus").innerText="ONLINE";
+document.getElementById("signal").innerText="CLEAR";
 
 </script>
 
