@@ -5,6 +5,9 @@
 <title>Orbital OS</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
+<!-- CUSTOM FONT -->
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;600&display=swap" rel="stylesheet">
+
 <style>
 :root{
   --bg:#05060a;
@@ -13,11 +16,12 @@
   --accent:#a855f7;
 }
 
+/* GLOBAL FONT */
 *{
   margin:0;
   padding:0;
   box-sizing:border-box;
-  font-family:-apple-system,BlinkMacSystemFont,sans-serif;
+  font-family:"Space Grotesk", sans-serif;
 }
 
 body{
@@ -26,25 +30,25 @@ body{
   color:white;
 }
 
-/* 🌌 STAR BACKGROUND */
+/* STAR BACKGROUND */
 canvas{
   position:fixed;
   inset:0;
   z-index:-1;
 }
 
-/* 🍎 TOP BAR */
+/* TOP BAR */
 .topbar{
   position:fixed;
   top:0;
   width:100%;
-  height:32px;
+  height:34px;
   display:flex;
   justify-content:space-between;
   align-items:center;
-  padding:0 14px;
+  padding:0 12px;
   background:var(--glass);
-  backdrop-filter: blur(12px);
+  backdrop-filter: blur(14px);
   border-bottom:1px solid var(--border);
   font-size:12px;
 }
@@ -53,76 +57,72 @@ canvas{
 #desktop{
   position:fixed;
   inset:0;
-  display:none;
 }
 
-/* DOCK (MAC STYLE) */
+/* CLOCK */
+#clock{
+  position:absolute;
+  top:40%;
+  width:100%;
+  text-align:center;
+  font-size:80px;
+  color:var(--accent);
+}
+
+/* DOCK */
 .dock{
   position:fixed;
-  bottom:12px;
+  bottom:14px;
   left:50%;
   transform:translateX(-50%);
   display:flex;
   gap:14px;
   padding:10px 14px;
   background:var(--glass);
-  backdrop-filter: blur(18px);
   border:1px solid var(--border);
   border-radius:18px;
+  backdrop-filter: blur(18px);
 }
 
 .icon{
-  width:46px;
-  height:46px;
+  width:44px;
+  height:44px;
   display:flex;
   align-items:center;
   justify-content:center;
   cursor:pointer;
-  transition:0.2s;
 }
 
-.icon:hover{
-  transform:scale(1.2);
-}
-
-/* WINDOWS (FULLSCREEN APPS) */
+/* WINDOWS */
 .window{
   position:fixed;
   inset:0;
   display:none;
   flex-direction:column;
-  background:rgba(10,10,20,0.9);
+  background:rgba(10,10,20,0.92);
   backdrop-filter: blur(20px);
 }
 
-/* WINDOW TOP BAR */
+/* TOP BAR */
 .wbar{
   height:38px;
   display:flex;
-  align-items:center;
   justify-content:space-between;
-  padding:0 14px;
-  background:rgba(255,255,255,0.05);
+  align-items:center;
+  padding:0 12px;
   border-bottom:1px solid var(--border);
 }
 
+/* CLOSE */
 .close{
+  color:#ff4d4d;
   cursor:pointer;
-  font-size:14px;
-  color:#ff5f5f;
-}
-
-/* CONTENT */
-.content{
-  flex:1;
-  display:flex;
-  flex-direction:column;
 }
 
 /* INPUT */
 input{
-  padding:10px;
   margin:12px;
+  padding:10px;
   border-radius:8px;
   border:1px solid var(--border);
   background:rgba(0,0,0,0.4);
@@ -133,15 +133,6 @@ input{
 iframe{
   flex:1;
   border:none;
-}
-
-/* ICON SVG STYLE */
-svg{
-  width:22px;
-  height:22px;
-  stroke:white;
-  fill:none;
-  stroke-width:1.6;
 }
 </style>
 </head>
@@ -159,71 +150,54 @@ svg{
 <!-- DESKTOP -->
 <div id="desktop">
 
-  <!-- DOCK -->
+  <div id="clock"></div>
+
   <div class="dock">
-
-    <!-- Browser -->
-    <div class="icon" onclick="openApp('proxy')">
-      <svg viewBox="0 0 24 24">
-        <circle cx="12" cy="12" r="9"></circle>
-        <path d="M3 12h18"></path>
-      </svg>
-    </div>
-
-    <!-- Settings -->
-    <div class="icon" onclick="openApp('settings')">
-      <svg viewBox="0 0 24 24">
-        <path d="M12 15a3 3 0 100-6 3 3 0 000 6z"></path>
-        <path d="M19.4 15a1.7 1.7 0 000-3l-1.1-.6.2-1.2a1.7 1.7 0 00-2.6-1.8l-1 .7-1-.7a1.7 1.7 0 00-2.6 1.8l.2 1.2-1.1.6a1.7 1.7 0 000 3l1.1.6-.2 1.2a1.7 1.7 0 002.6 1.8l1-.7 1 .7a1.7 1.7 0 002.6-1.8l-.2-1.2 1.1-.6z"></path>
-      </svg>
-    </div>
-
+    <div class="icon" onclick="openWin('proxy')">🌐</div>
+    <div class="icon" onclick="openWin('settings')">⚙️</div>
   </div>
+
 </div>
 
-<!-- 🌐 PROXY APP -->
+<!-- PROXY -->
 <div id="proxy" class="window">
   <div class="wbar">
     <div>Browser</div>
-    <div class="close" onclick="closeApp('proxy')">✕</div>
+    <div class="close" onclick="closeWin('proxy')">X</div>
   </div>
 
-  <div class="content">
-    <input id="url" placeholder="Search or enter URL">
-    <iframe id="frame"></iframe>
-  </div>
+  <input id="url" placeholder="Search or URL">
+  <iframe id="frame"></iframe>
 </div>
 
-<!-- ⚙️ SETTINGS APP -->
+<!-- SETTINGS -->
 <div id="settings" class="window">
   <div class="wbar">
     <div>Settings</div>
-    <div class="close" onclick="closeApp('settings')">✕</div>
+    <div class="close" onclick="closeWin('settings')">X</div>
   </div>
 
-  <div class="content">
-    <input id="titleInput" placeholder="Tab title">
-    <input id="panicInput" placeholder="Panic URL (\ key)">
-  </div>
+  <input id="title" placeholder="Tab title">
+  <input id="panic" placeholder="Panic URL ( \ key )">
 </div>
 
 <script>
 
-/* OPEN/CLOSE APPS */
-function openApp(id){
+/* OPEN / CLOSE WINDOWS (SAFE) */
+function openWin(id){
   document.getElementById(id).style.display="flex";
-  document.getElementById("desktop").style.display="none";
 }
 
-function closeApp(id){
+function closeWin(id){
   document.getElementById(id).style.display="none";
-  document.getElementById("desktop").style.display="block";
 }
 
-/* PROXY NAV */
-document.getElementById("url").onchange = e=>{
-  let v=e.target.value;
-  frame.src=v.startsWith("http")?v:"https://www.google.com/search?q="+v;
+/* PROXY */
+url.onchange = () => {
+  let v=url.value;
+  frame.src = v.startsWith("http")
+    ? v
+    : "https://www.google.com/search?q=" + v;
 };
 
 /* CLOCK */
@@ -237,21 +211,16 @@ setInterval(()=>{
 /* PANIC KEY */
 document.addEventListener("keydown",e=>{
   if(e.key==="\\"){
-    let url=localStorage.panic||"https://google.com";
-    window.location.href=url;
+    let u=localStorage.panic||"https://google.com";
+    window.location.href=u;
   }
 });
 
 /* SAVE SETTINGS */
-titleInput.oninput=()=>{
-  document.title=titleInput.value;
-};
+title.oninput=()=>document.title=title.value;
+panic.oninput=()=>localStorage.panic=panic.value;
 
-panicInput.oninput=()=>{
-  localStorage.panic=panicInput.value;
-};
-
-/* 🌌 STAR BACKGROUND */
+/* STAR BACKGROUND */
 const c=document.getElementById("stars");
 const ctx=c.getContext("2d");
 let w,h,stars=[];
@@ -260,8 +229,7 @@ function resize(){
   w=c.width=innerWidth;
   h=c.height=innerHeight;
 }
-resize();
-onresize=resize;
+resize();onresize=resize;
 
 for(let i=0;i<120;i++){
   stars.push({x:Math.random()*w,y:Math.random()*h});
@@ -272,8 +240,8 @@ function draw(){
   ctx.fillStyle="white";
 
   stars.forEach(s=>{
-    s.y+=0.3;
-    if(s.y>h) s.y=0;
+    s.y+=0.4;
+    if(s.y>h)s.y=0;
     ctx.fillRect(s.x,s.y,2,2);
   });
 
