@@ -27,14 +27,14 @@ body{
     color:white;
 }
 
-/* ⚠️ DISCLAIMER */
+/* DISCLAIMER */
 #disclaimer{
     position:fixed;
     inset:0;
     display:flex;
     justify-content:center;
     align-items:center;
-    background:rgba(0,0,0,0.9);
+    background:rgba(0,0,0,0.88);
     z-index:9999;
 }
 
@@ -42,7 +42,7 @@ body{
     width:340px;
     padding:20px;
     border:1px solid var(--soft);
-    background:rgba(0,0,0,0.8);
+    background:rgba(0,0,0,0.75);
     backdrop-filter: blur(14px);
     text-align:center;
     color:var(--main);
@@ -69,7 +69,8 @@ body{
 }
 
 #boot h1{
-    letter-spacing:20px;
+    letter-spacing:22px;
+    font-size:3rem;
     color:var(--main);
 }
 
@@ -92,7 +93,7 @@ body{
 }
 
 /* SKIP TEXT */
-#skip{
+#skipHint{
     position:fixed;
     bottom:20px;
     width:100%;
@@ -113,6 +114,9 @@ body{
 
 /* TOPBAR */
 .topbar{
+    position:absolute;
+    top:0;
+    width:100%;
     height:34px;
     display:flex;
     justify-content:space-between;
@@ -126,17 +130,79 @@ body{
 /* CLOCK */
 #time{
     position:absolute;
-    top:30%;
+    top:28%;
     width:100%;
     text-align:center;
     font-size:9rem;
     color:var(--main);
+}
+
+/* WIDGETS */
+#widgets{
+    position:absolute;
+    left:20px;
+    top:80px;
+    display:flex;
+    flex-direction:column;
+    gap:12px;
+    width:260px;
+}
+
+.widget{
+    padding:12px;
+    background:rgba(0,0,0,0.35);
+    border:1px solid var(--soft);
+    backdrop-filter: blur(12px);
+}
+
+.wTitle{
+    font-size:10px;
+    opacity:0.7;
+    margin-bottom:6px;
+    letter-spacing:2px;
+}
+
+.wText{
+    font-size:12px;
+    opacity:0.85;
+}
+
+/* DOCK */
+#dock{
+    position:absolute;
+    bottom:18px;
+    left:50%;
+    transform:translateX(-50%);
+    display:flex;
+    gap:14px;
+    padding:10px 14px;
+    border-radius:18px;
+    background:rgba(0,0,0,0.6);
+    border:1px solid var(--soft);
+}
+
+.dock-app{
+    width:60px;
+    height:60px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    cursor:pointer;
+}
+
+.dock-app svg{
+    width:28px;
+    height:28px;
+    stroke:var(--main);
+    fill:none;
+    stroke-width:1.4;
 }
 </style>
 </head>
 
 <body>
 
+<!-- DISCLAIMER -->
 <div id="disclaimer">
     <div class="discBox">
         <p>
@@ -147,29 +213,61 @@ body{
     </div>
 </div>
 
+<!-- BOOT -->
 <div id="boot">
-    <h1>ORBITAL</h1>
-    <div id="enter">START</div>
+    <h1>ORBITAL OS</h1>
+    <div id="enter">ENTER SYSTEM</div>
 </div>
 
+<!-- VIDEO -->
 <video id="video" muted playsinline>
     <source src="video.mp4" type="video/mp4">
 </video>
 
-<div id="skip">PRESS ENTER TWICE TO SKIP</div>
+<div id="skipHint">Press ENTER twice to skip</div>
 
+<!-- DESKTOP -->
 <div id="desktop">
+
     <div class="topbar">
-        <div>ORBITAL</div>
+        <div>ORBITAL SYSTEM</div>
         <div id="nav"></div>
     </div>
 
-    <div id="time"></div>
+    <div id="time">0:00</div>
+
+    <div id="widgets">
+        <div class="widget">
+            <div class="wTitle">SYSTEM</div>
+            <div class="wText" id="sysStatus"></div>
+        </div>
+
+        <div class="widget">
+            <div class="wTitle">SIGNAL</div>
+            <div class="wText" id="signal"></div>
+        </div>
+
+        <div class="widget">
+            <div class="wTitle">QUOTE</div>
+            <div class="wText" id="quote"></div>
+        </div>
+    </div>
+
+    <div id="dock">
+        <div class="dock-app">
+            <svg viewBox="0 0 24 24">
+                <circle cx="12" cy="12" r="9"></circle>
+                <path d="M3 12h18"></path>
+                <path d="M12 3c3 4 3 14 0 18"></path>
+            </svg>
+        </div>
+    </div>
+
 </div>
 
 <script>
 
-/* ACCEPT */
+/* DISCLAIMER */
 function accept(){
     disclaimer.style.display="none";
     boot.style.display="flex";
@@ -180,12 +278,13 @@ enter.onclick=()=>{
     boot.style.display="none";
 
     video.style.display="block";
-    skip.style.display="block";
+    skipHint.style.display="block";
     video.play();
 };
 
 /* DOUBLE ENTER SKIP */
 let press=0;
+
 document.addEventListener("keydown",e=>{
     if(e.key==="Enter"){
         press++;
@@ -197,13 +296,13 @@ document.addEventListener("keydown",e=>{
     }
 });
 
-/* VIDEO END */
-video.onended=endVideo;
+/* VIDEO END FIX */
+video.onended = endVideo;
 
 function endVideo(){
     video.pause();
     video.style.display="none";
-    skip.style.display="none";
+    skipHint.style.display="none";
     desktop.style.opacity="1";
 }
 
@@ -217,6 +316,11 @@ function tick(){
 }
 setInterval(tick,1000);
 tick();
+
+/* TEXT */
+quote.innerText="Orbit beyond limits.";
+sysStatus.innerText="ONLINE";
+signal.innerText="CLEAR";
 
 </script>
 
