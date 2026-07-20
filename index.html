@@ -1,269 +1,1510 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<title>Orbital OS</title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lyric OS - Premium Workspace</title>
+    <style>
+        /* ==========================================================================
+           1. PREMIUM HARDWARE-ACCELERATED SYSTEM DESIGN TOKENS
+           ========================================================================== */
+        :root {
+            --bg-pure-black: #050505;
+            --bg-matte-black: #0b0b0c;
+            --bg-graphite-dark: #121214;
+            --bg-graphite-medium: #1a1a1e;
+            --bg-graphite-light: #28282e;
+            
+            --text-primary: #f3f4f6;
+            --text-secondary: #a1a1aa;
+            --text-muted: #6b7280;
+            --accent-white: #ffffff;
+            --accent-red: #ef4444;
+            
+            --border-glass: rgba(255, 255, 255, 0.06);
+            --border-glass-focus: rgba(255, 255, 255, 0.14);
+            --bg-glass: rgba(14, 14, 16, 0.75);
+            
+            --blur-radius: 28px;
+            --shadow-premium: 0 25px 60px -15px rgba(0, 0, 0, 0.85);
+            --shadow-window: 0 40px 90px -20px rgba(0, 0, 0, 0.95);
+            --font-stack: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        }
 
-<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;600&display=swap" rel="stylesheet">
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            user-select: none;
+            -webkit-user-drag: none;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
 
-<style>
-*{
-  margin:0;
-  padding:0;
-  box-sizing:border-box;
-  font-family:"Space Grotesk", sans-serif;
-}
+        body, html {
+            width: 100%;
+            height: 100%;
+            background-color: var(--bg-pure-black);
+            font-family: var(--font-stack);
+            color: var(--text-primary);
+            overflow: hidden;
+        }
 
-body{
-  background:#05060a;
-  overflow:hidden;
-  color:white;
-}
+        /* Master Viewport Layers Layout */
+        .os-layer {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0;
+            pointer-events: none;
+            transform: scale(1);
+            transition: opacity 0.6s cubic-bezier(0.22, 1, 0.36, 1), transform 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+            z-index: 1;
+        }
 
-/* STAR BACKGROUND */
-canvas{
-  position:fixed;
-  inset:0;
-  z-index:-1;
-}
+        .os-layer.active {
+            opacity: 1;
+            pointer-events: auto;
+            z-index: 10;
+        }
 
-/* TOP BAR */
-.topbar{
-  position:fixed;
-  top:0;
-  width:100%;
-  height:32px;
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  padding:0 12px;
-  background:rgba(255,255,255,0.05);
-  backdrop-filter: blur(12px);
-  border-bottom:1px solid rgba(255,255,255,0.12);
-  font-size:12px;
-}
+        .glassmorphism {
+            background: var(--bg-glass);
+            backdrop-filter: blur(var(--blur-radius));
+            -webkit-backdrop-filter: blur(var(--blur-radius));
+            border: 1px solid var(--border-glass);
+            box-shadow: var(--shadow-premium);
+            border-radius: 14px;
+        }
 
-/* DESKTOP */
-#desktop{
-  position:fixed;
-  inset:0;
-  display:flex;
-  flex-direction:column;
-  justify-content:center;
-  align-items:center;
-}
+        /* Custom OS Scrollbar styling */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: var(--bg-graphite-light);
+            border-radius: 20px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--text-muted);
+        }
 
-/* CLOCK */
-#clock{
-  font-size:80px;
-  color:#a855f7;
-}
+        /* ==========================================================================
+           2. ANIMATED BOOT, VIDEO ESCAPE & INTERACTIVE LOGIN LAYERS
+           ========================================================================== */
+        #boot-screen {
+            background: #000000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
 
-/* DOCK */
-.dock{
-  position:fixed;
-  bottom:16px;
-  left:50%;
-  transform:translateX(-50%);
-  display:flex;
-  gap:12px;
-  padding:10px 14px;
-  border-radius:16px;
-  background:rgba(255,255,255,0.05);
-  backdrop-filter: blur(14px);
-  border:1px solid rgba(255,255,255,0.12);
-}
+        .boot-container {
+            text-align: center;
+            width: 240px;
+        }
 
-/* ICONS */
-.icon{
-  width:44px;
-  height:44px;
-  display:flex;
-  justify-content:center;
-  align-items:center;
-  cursor:pointer;
-  border-radius:10px;
-  transition:0.15s;
-}
+        .lyric-logo {
+            font-size: 1.6rem;
+            font-weight: 700;
+            letter-spacing: 0.35em;
+            margin-bottom: 2.5rem;
+            color: var(--accent-white);
+            text-shadow: 0 0 20px rgba(255,255,255,0.1);
+        }
 
-.icon:hover{
-  background:rgba(255,255,255,0.08);
-}
+        .progress-bar-container {
+            width: 100%;
+            height: 3px;
+            background: #141416;
+            border-radius: 6px;
+            overflow: hidden;
+        }
 
-/* OVERLAYS (SAFE SYSTEM) */
-.overlay{
-  position:fixed;
-  inset:0;
-  display:none;
-  flex-direction:column;
-  background:rgba(10,10,20,0.95);
-  backdrop-filter: blur(18px);
-}
+        .progress-bar-fill {
+            width: 0%;
+            height: 100%;
+            background: var(--accent-white);
+            transition: width 2.4s cubic-bezier(0.22, 1, 0.36, 1);
+        }
 
-/* TOP BAR INSIDE WINDOW */
-.bar{
-  height:36px;
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  padding:0 12px;
-  border-bottom:1px solid rgba(255,255,255,0.12);
-}
+        #video-screen video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            background: #000;
+        }
 
-/* CLOSE */
-.close{
-  color:#ff5c5c;
-  cursor:pointer;
-}
+        .skip-hint {
+            position: absolute;
+            bottom: 32px;
+            right: 32px;
+            color: var(--text-secondary);
+            font-size: 0.8rem;
+            letter-spacing: 0.08em;
+            background: rgba(10, 10, 12, 0.7);
+            padding: 10px 20px;
+            border-radius: 30px;
+            border: 1px solid var(--border-glass);
+            backdrop-filter: blur(10px);
+        }
 
-/* INPUT */
-input{
-  margin:10px;
-  padding:10px;
-  border-radius:8px;
-  border:1px solid rgba(255,255,255,0.15);
-  background:rgba(0,0,0,0.4);
-  color:white;
-  outline:none;
-}
+        #login-screen {
+            background: radial-gradient(circle at center, #111113 0%, #050506 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transform: scale(1.05);
+        }
 
-/* IFRAME */
-iframe{
-  flex:1;
-  border:none;
-}
-</style>
+        #login-screen.active {
+            transform: scale(1);
+        }
+
+        .login-card {
+            width: 360px;
+            padding: 45px 35px;
+            text-align: center;
+            border: 1px solid rgba(255,255,255,0.08);
+        }
+
+        .avatar-container {
+            width: 84px;
+            height: 84px;
+            margin: 0 auto 28px auto;
+            background: linear-gradient(135deg, #1c1c1f 0%, #0e0e10 100%);
+            border: 1px solid var(--border-glass-focus);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.2rem;
+            box-shadow: inset 0 2px 4px rgba(255,255,255,0.05);
+        }
+
+        .login-card input[type="text"],
+        .login-card input[type="password"] {
+            width: 100%;
+            padding: 14px 16px;
+            margin-bottom: 18px;
+            background: rgba(5, 5, 6, 0.6);
+            border: 1px solid var(--border-glass);
+            border-radius: 10px;
+            color: var(--text-primary);
+            font-family: var(--font-stack);
+            font-size: 0.9rem;
+            outline: none;
+            transition: border-color 0.25s, background 0.25s;
+        }
+
+        .login-card input:focus {
+            border-color: var(--border-glass-focus);
+            background: rgba(5, 5, 6, 0.8);
+        }
+
+        .remember-me-container {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 28px;
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            cursor: pointer;
+        }
+
+        .remember-me-container input {
+            accent-color: var(--accent-white);
+            cursor: pointer;
+        }
+
+        .btn-login {
+            width: 100%;
+            padding: 14px;
+            background: var(--accent-white);
+            color: var(--bg-pure-black);
+            border: none;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: opacity 0.2s, transform 0.2s;
+        }
+
+        .btn-login:hover {
+            opacity: 0.9;
+            transform: translateY(-1px);
+        }
+
+        /* ==========================================================================
+           3. DESKTOP WORKSPACE LAYOUT & SYSTEM MENU BAR
+           ========================================================================== */
+        #desktop-screen {
+            background: radial-gradient(circle at 50% 50%, #18181b 0%, #070708 100%);
+        }
+
+        .menu-bar {
+            height: 32px;
+            width: 100%;
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 1000;
+            border-radius: 0;
+            border-top: none; border-left: none; border-right: none;
+            border-bottom: 1px solid var(--border-glass);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 24px;
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+
+        .menu-left, .menu-right {
+            display: flex;
+            align-items: center;
+            gap: 22px;
+        }
+
+        .menu-item {
+            cursor: pointer;
+            color: var(--text-secondary);
+            transition: color 0.15s;
+        }
+
+        .menu-item.bold {
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .menu-item:hover {
+            color: var(--accent-white);
+        }
+
+        #window-sandbox {
+            flex: 1;
+            margin-top: 32px;
+            position: relative;
+            width: 100%;
+            height: calc(100% - 32px);
+        }
+
+        /* ==========================================================================
+           4. DYNAMIC ADVANCED WINDOW MANAGEMENT SYSTEM
+           ========================================================================== */
+        .window {
+            position: absolute;
+            width: 760px;
+            height: 520px;
+            min-width: 400px;
+            min-height: 280px;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            opacity: 0;
+            transform: scale(0.96) translateY(10px);
+            transition: opacity 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), border-color 0.2s;
+            border: 1px solid var(--border-glass);
+        }
+
+        .window.opened {
+            opacity: 1;
+            transform: scale(1) translateY(0);
+        }
+
+        .window.active-focus {
+            z-index: 100;
+            box-shadow: var(--shadow-window);
+            border-color: var(--border-glass-focus);
+        }
+
+        .window-header {
+            height: 44px;
+            background: rgba(14, 14, 16, 0.5);
+            border-bottom: 1px solid var(--border-glass);
+            display: flex;
+            align-items: center;
+            padding: 0 20px;
+            cursor: move;
+            position: relative;
+        }
+
+        .window-controls {
+            display: flex;
+            gap: 8px;
+            position: absolute;
+            left: 20px;
+            z-index: 10;
+        }
+
+        .win-btn {
+            width: 13px;
+            height: 13px;
+            border-radius: 50%;
+            border: none;
+            cursor: pointer;
+            position: relative;
+            transition: filter 0.2s;
+        }
+
+        .win-btn:hover {
+            filter: brightness(1.15);
+        }
+
+        .win-close { background: #ff5f56; }
+        .win-minimize { background: #ffbd2e; }
+        .win-maximize { background: #27c93f; }
+
+        .window-title {
+            width: 100%;
+            text-align: center;
+            font-size: 0.85rem;
+            font-weight: 600;
+            letter-spacing: 0.02em;
+            color: var(--text-secondary);
+        }
+
+        .window.active-focus .window-title {
+            color: var(--text-primary);
+        }
+
+        .window-content {
+            flex: 1;
+            background: rgba(10, 10, 12, 0.35);
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Resize Handle */
+        .window-resize-handle {
+            position: absolute;
+            right: 0;
+            bottom: 0;
+            width: 15px;
+            height: 15px;
+            cursor: se-resize;
+            z-index: 999;
+        }
+
+        /* ==========================================================================
+           5. PREMIUM DOCK DESIGN & ACTIVE APPLICATION INDICATORS
+           ========================================================================== */
+        .dock-container {
+            position: fixed;
+            bottom: 16px;
+            left: 0;
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            pointer-events: none;
+            z-index: 1000;
+        }
+
+        .dock {
+            display: flex;
+            align-items: flex-end;
+            padding: 10px 14px;
+            gap: 14px;
+            border-radius: 24px;
+            pointer-events: auto;
+            height: 74px;
+            border: 1px solid rgba(255,255,255,0.07);
+            transform: translateZ(0);
+        }
+
+        .dock-item {
+            position: relative;
+            width: 52px;
+            height: 52px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: width 0.25s cubic-bezier(0.25, 1, 0.5, 1), height 0.25s cubic-bezier(0.25, 1, 0.5, 1);
+        }
+
+        .dock:hover .dock-item:hover {
+            width: 66px;
+            height: 66px;
+        }
+
+        .dock-icon {
+            width: 100%;
+            height: 100%;
+            background-color: var(--bg-graphite-medium);
+            border-radius: 14px;
+            border: 1px solid var(--border-glass);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.6rem;
+            box-shadow: inset 0 1px 2px rgba(255,255,255,0.05);
+            transition: background-color 0.2s, border-color 0.2s;
+        }
+
+        .dock-item:hover .dock-icon {
+            background-color: var(--bg-graphite-light);
+            border-color: var(--border-glass-focus);
+        }
+
+        .dock-indicator {
+            width: 4px;
+            height: 4px;
+            background: var(--accent-white);
+            border-radius: 50%;
+            position: absolute;
+            bottom: -6px;
+            opacity: 0;
+            transform: scale(0.5);
+            transition: opacity 0.3s, transform 0.3s;
+        }
+
+        .dock-item.running .dock-indicator {
+            opacity: 1;
+            transform: scale(1);
+        }
+
+        .dock-separator {
+            width: 1px;
+            height: 44px;
+            background: var(--border-glass);
+            margin: 0 4px;
+            align-self: center;
+        }
+
+        .dock-bounce {
+            animation: dockBounce 0.45s ease 2;
+        }
+
+        @keyframes dockBounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-20px); }
+        }
+
+        /* ==========================================================================
+           6. LIVE NOTIFICATION TOAST PLATFORM ENGINE
+           ========================================================================== */
+        #notification-center {
+            position: fixed;
+            top: 48px;
+            right: 24px;
+            width: 320px;
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            pointer-events: none;
+        }
+
+        .toast {
+            width: 100%;
+            padding: 16px;
+            color: var(--text-primary);
+            opacity: 0;
+            transform: translateX(60px);
+            transition: opacity 0.35s cubic-bezier(0.25, 1, 0.5, 1), transform 0.35s cubic-bezier(0.25, 1, 0.5, 1);
+            pointer-events: auto;
+            border-left: 3px solid var(--accent-white);
+        }
+
+        .toast.show {
+            opacity: 1;
+            transform: translateX(0);
+        }
+
+        .toast-title {
+            font-size: 0.85rem;
+            font-weight: 700;
+            margin-bottom: 4px;
+            display: flex;
+            justify-content: space-between;
+        }
+        
+        .toast-time {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            font-weight: 400;
+        }
+
+        .toast-body {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            line-height: 1.4;
+        }
+
+        /* ==========================================================================
+           7. MODULE APP EMBEDDED UI LAYOUTS (ARCADE, PROXY, ADMIN)
+           ========================================================================== */
+        
+        /* GENERAL APP LAYOUT SHELLS */
+        .app-container {
+            display: flex;
+            height: 100%;
+            width: 100%;
+            background: #0d0d0f;
+        }
+
+        .app-sidebar {
+            width: 200px;
+            background: rgba(16, 16, 18, 0.6);
+            border-right: 1px solid var(--border-glass);
+            padding: 20px 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .sidebar-btn {
+            width: 100%;
+            padding: 10px 14px;
+            background: transparent;
+            border: none;
+            border-radius: 8px;
+            color: var(--text-secondary);
+            text-align: left;
+            font-size: 0.85rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background 0.2s, color 0.2s;
+        }
+
+        .sidebar-btn:hover, .sidebar-btn.active {
+            background: var(--bg-graphite-medium);
+            color: var(--text-primary);
+        }
+        
+        .sidebar-btn.active {
+            border: 1px solid var(--border-glass);
+        }
+
+        .app-body {
+            flex: 1;
+            padding: 24px;
+            overflow-y: auto;
+            position: relative;
+        }
+
+        /* 7A. PROXY APPLICATION MODULE */
+        .proxy-container {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            width: 100%;
+            background: var(--bg-pure-black);
+        }
+
+        .proxy-bar {
+            background: var(--bg-graphite-dark);
+            padding: 10px 18px;
+            display: flex;
+            gap: 16px;
+            align-items: center;
+            border-bottom: 1px solid var(--border-glass);
+        }
+
+        .proxy-tabs {
+            display: flex;
+            gap: 6px;
+        }
+
+        .proxy-tab {
+            padding: 6px 14px;
+            background: var(--bg-graphite-medium);
+            border-radius: 8px;
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            border: 1px solid var(--border-glass);
+            cursor: pointer;
+        }
+
+        .proxy-tab.active {
+            background: var(--bg-graphite-light);
+            color: var(--text-primary);
+            border-color: var(--border-glass-focus);
+        }
+
+        .proxy-input-wrapper {
+            flex: 1;
+            position: relative;
+        }
+
+        .proxy-input {
+            width: 100%;
+            background: #070708;
+            border: 1px solid var(--border-glass);
+            padding: 8px 16px;
+            border-radius: 20px;
+            color: var(--text-primary);
+            font-size: 0.8rem;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        .proxy-input:focus {
+            border-color: var(--border-glass-focus);
+        }
+
+        /* 7B. ARCADE APPLICATION MODULE */
+        .arcade-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+        }
+
+        .search-bar {
+            background: var(--bg-graphite-dark);
+            border: 1px solid var(--border-glass);
+            padding: 8px 14px;
+            border-radius: 8px;
+            color: #fff;
+            outline: none;
+            font-size: 0.8rem;
+            width: 220px;
+        }
+
+        .game-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+            gap: 20px;
+        }
+
+        .game-card {
+            background: var(--bg-graphite-dark);
+            border: 1px solid var(--border-glass);
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+            cursor: pointer;
+            position: relative;
+            transition: border-color 0.25s, transform 0.25s;
+        }
+
+        .game-card:hover {
+            border-color: var(--border-glass-focus);
+            transform: translateY(-4px);
+        }
+
+        .game-thumb {
+            width: 56px;
+            height: 56px;
+            background: var(--bg-graphite-medium);
+            margin: 0 auto 14px auto;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            box-shadow: 0 8px 16px rgba(0,0,0,0.3);
+        }
+
+        .game-title {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 4px;
+        }
+
+        .game-genre {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+        }
+
+        /* 7C. COMMAND TERMINAL & ADMIN CONTROL CENTER MODULE */
+        .admin-pane-view {
+            display: none;
+        }
+        
+        .admin-pane-view.active {
+            display: block;
+        }
+
+        .stat-banner {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 16px;
+            margin-bottom: 28px;
+        }
+
+        .stat-card {
+            background: var(--bg-graphite-dark);
+            border: 1px solid var(--border-glass);
+            padding: 20px;
+            border-radius: 12px;
+        }
+
+        .stat-val {
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-top: 6px;
+            color: var(--accent-white);
+        }
+
+        .stat-lbl {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        /* Interactive Command Line Terminal */
+        .terminal-shell {
+            background: #050506;
+            border: 1px solid var(--border-glass);
+            border-radius: 10px;
+            height: 220px;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            font-family: "Courier New", Courier, monospace;
+        }
+
+        .terminal-logs {
+            flex: 1;
+            padding: 14px;
+            overflow-y: auto;
+            font-size: 0.8rem;
+            color: #34d399;
+            line-height: 1.5;
+        }
+
+        .terminal-input-row {
+            display: flex;
+            background: rgba(0,0,0,0.3);
+            border-top: 1px solid var(--border-glass);
+            padding: 10px 14px;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .terminal-prompt {
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            font-weight: bold;
+        }
+
+        .terminal-input {
+            flex: 1;
+            background: transparent;
+            border: none;
+            outline: none;
+            color: var(--text-primary);
+            font-family: inherit;
+            font-size: 0.85rem;
+        }
+
+        /* Upload Forms & Tables UI */
+        .admin-form-group {
+            margin-bottom: 16px;
+        }
+
+        .admin-form-group label {
+            display: block;
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            margin-bottom: 6px;
+        }
+
+        .admin-input {
+            width: 100%;
+            background: var(--bg-graphite-dark);
+            border: 1px solid var(--border-glass);
+            padding: 10px 14px;
+            border-radius: 8px;
+            color: #fff;
+            outline: none;
+            font-size: 0.85rem;
+        }
+
+        .admin-btn {
+            background: var(--accent-white);
+            color: #000;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .system-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.8rem;
+            text-align: left;
+            margin-top: 14px;
+        }
+
+        .system-table th {
+            color: var(--text-muted);
+            padding: 10px;
+            border-bottom: 1px solid var(--border-glass-focus);
+            font-weight: 600;
+        }
+
+        .system-table td {
+            padding: 12px 10px;
+            border-bottom: 1px solid var(--border-glass);
+            color: var(--text-secondary);
+        }
+    </style>
 </head>
-
 <body>
 
-<canvas id="stars"></canvas>
+    <div id="boot-screen" class="os-layer active">
+        <div class="boot-container">
+            <div class="lyric-logo">LYRIC OS</div>
+            <div class="progress-bar-container">
+                <div class="progress-bar-fill"></div>
+            </div>
+        </div>
+    </div>
 
-<!-- TOP BAR -->
-<div class="topbar">
-  <div>Orbital</div>
-  <div id="time"></div>
-</div>
+    <div id="video-screen" class="os-layer">
+        <video id="intro-video" src="" playsinline></video>
+        <div class="skip-hint">Press [ENTER] twice rapidly to skip</div>
+    </div>
 
-<!-- DESKTOP -->
-<div id="desktop">
-  <div id="clock"></div>
+    <div id="login-screen" class="os-layer">
+        <div class="login-card glassmorphism">
+            <div class="avatar-container">👤</div>
+            <form id="login-form">
+                <input type="text" id="username" placeholder="Username" required value="LyricAdmin">
+                <input type="password" id="password" placeholder="Password" required value="••••••••">
+                <div class="remember-me-container">
+                    <input type="checkbox" id="remember-me" checked>
+                    <label for="remember-me">Remember Administrator Profile</label>
+                </div>
+                <button type="submit" class="btn-login">Sign In</button>
+            </form>
+        </div>
+    </div>
 
-  <div class="dock">
-    <div class="icon" onclick="openOverlay('proxy')">🌐</div>
-    <div class="icon" onclick="openOverlay('settings')">⚙</div>
-  </div>
-</div>
+    <div id="desktop-screen" class="os-layer">
+        <header class="menu-bar glassmorphism">
+            <div class="menu-left">
+                <span class="menu-item bold">Lyric OS</span>
+                <span class="menu-item">Workspace</span>
+                <span class="menu-item">Controls</span>
+                <span class="menu-item">Security</span>
+            </div>
+            <div class="menu-right">
+                <span class="menu-item" id="live-date">Mon Jul 19</span>
+                <span class="menu-item" id="live-clock">12:00 PM</span>
+            </div>
+        </header>
 
-<!-- PROXY -->
-<div id="proxy" class="overlay">
-  <div class="bar">
-    <div>Browser</div>
-    <div class="close" onclick="closeOverlay('proxy')">X</div>
-  </div>
+        <main id="window-sandbox"></main>
 
-  <input id="url" placeholder="Search or enter URL">
-  <iframe id="frame"></iframe>
-</div>
+        <div id="notification-center"></div>
 
-<!-- SETTINGS -->
-<div id="settings" class="overlay">
-  <div class="bar">
-    <div>Settings</div>
-    <div class="close" onclick="closeOverlay('settings')">X</div>
-  </div>
+        <footer class="dock-container">
+            <div class="dock glassmorphism">
+                <div class="dock-item" data-app="arcade" title="Arcade Hub">
+                    <div class="dock-icon">🕹️</div>
+                    <div class="dock-indicator"></div>
+                </div>
+                <div class="dock-item" data-app="proxy" title="Lyric Proxy Browser">
+                    <div class="dock-icon">🌐</div>
+                    <div class="dock-indicator"></div>
+                </div>
+                <div class="dock-separator"></div>
+                <div class="dock-item" data-app="admin" title="Admin Command Center">
+                    <div class="dock-icon" style="background: linear-gradient(135deg, #222 0%, #050505 100%);">⚡</div>
+                    <div class="dock-indicator"></div>
+                </div>
+            </div>
+        </footer>
+    </div>
 
-  <input id="title" placeholder="Tab title">
-  <input id="panic" placeholder="Panic URL (press \)">
-</div>
+    <audio id="snd-boot" src="data:audio/wav;base64,UklGRigAAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YQQAAAAAAA==" preload="auto"></audio>
+    <audio id="snd-ui" src="data:audio/wav;base64,UklGRigAAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YQQAAAAAAA==" preload="auto"></audio>
 
-<script>
+    <script>
+        /* Global Reactive OS State Storage Engine */
+        const LyricOSState = {
+            games: [
+                { id: 'g1', title: 'Block Cascade', genre: 'Puzzle', icon: '🧱' },
+                { id: 'g2', title: 'Vector Runner', genre: 'Arcade', icon: '🏃' },
+                { id: 'g3', title: 'Grid Overlord', genre: 'Strategy', icon: '♟️' }
+            ],
+            logs: [
+                'System Core initial structural modules boot completed.',
+                'Security token validation complete: Admin login ready.'
+            ],
+            announcements: [
+                'Welcome to Lyric OS Kernel Framework Update.'
+            ],
+            activeUsersCount: 1,
+            totalMemoryAlloc: '42.8 MB'
+        };
 
-/* SAFE OPEN/CLOSE SYSTEM (NO BUG STATE ISSUES) */
-function openOverlay(id){
-  document.getElementById(id).style.display="flex";
-}
+        /* Multi-Window Sandbox Management Engine */
+        class WindowManager {
+            constructor() {
+                this.sandbox = document.getElementById('window-sandbox');
+                this.windows = [];
+                this.activeWindow = null;
+                this.zIndexCounter = 10;
+            }
 
-function closeOverlay(id){
-  document.getElementById(id).style.display="none";
-}
+            createWindow(id, title, contentHTML) {
+                const existingWin = document.getElementById(`win-${id}`);
+                if (existingWin) {
+                    this.focusWindow(existingWin);
+                    return existingWin;
+                }
 
-/* PROXY NAVIGATION */
-document.getElementById("url").addEventListener("keydown",e=>{
-  if(e.key==="Enter"){
-    let v=e.target.value.trim();
-    document.getElementById("frame").src =
-      v.startsWith("http")
-        ? v
-        : "https://www.google.com/search?q="+encodeURIComponent(v);
-  }
-});
+                const winEl = document.createElement('div');
+                winEl.id = `win-${id}`;
+                winEl.className = 'window glassmorphism';
+                winEl.style.left = `${140 + (this.windows.length * 35)}px`;
+                winEl.style.top = `${80 + (this.windows.length * 28)}px`;
 
-/* CLOCK */
-function updateTime(){
-  let d=new Date();
-  let h=d.getHours()%12||12;
-  let m=d.getMinutes().toString().padStart(2,"0");
-  document.getElementById("clock").innerText=`${h}:${m}`;
-  document.getElementById("time").innerText=`${h}:${m}`;
-}
-setInterval(updateTime,1000);
-updateTime();
+                winEl.innerHTML = `
+                    <div class="window-header">
+                        <div class="window-controls">
+                            <button class="win-btn win-close"></button>
+                            <button class="win-btn win-minimize"></button>
+                            <button class="win-btn win-maximize"></button>
+                        </div>
+                        <div class="window-title">${title}</div>
+                    </div>
+                    <div class="window-content">${contentHTML}</div>
+                    <div class="window-resize-handle"></div>
+                `;
 
-/* PANIC KEY (SAFE GLOBAL LISTENER) */
-document.addEventListener("keydown",e=>{
-  if(e.key==="\\"){
-    let url = localStorage.panic || "https://google.com";
-    window.location.href = url;
-  }
-});
+                this.sandbox.appendChild(winEl);
+                this.windows.push(winEl);
+                
+                setTimeout(() => winEl.classList.add('opened'), 20);
+                this.setupWindowInteractions(winEl);
+                this.focusWindow(winEl);
+                
+                return winEl;
+            }
 
-/* SETTINGS SAVE */
-document.getElementById("title").addEventListener("input",e=>{
-  document.title = e.target.value;
-});
+            focusWindow(winEl) {
+                if (this.activeWindow === winEl) return;
+                this.windows.forEach(w => w.classList.remove('active-focus'));
+                this.zIndexCounter++;
+                winEl.style.zIndex = this.zIndexCounter;
+                winEl.classList.add('active-focus');
+                this.activeWindow = winEl;
+            }
 
-document.getElementById("panic").addEventListener("input",e=>{
-  localStorage.panic = e.target.value;
-});
+            closeWindow(winEl) {
+                winEl.classList.remove('opened');
+                setTimeout(() => {
+                    winEl.remove();
+                    this.windows = this.windows.filter(w => w !== winEl);
+                    if (this.windows.length > 0) {
+                        this.focusWindow(this.windows[this.windows.length - 1]);
+                    } else {
+                        this.activeWindow = null;
+                    }
+                    document.dispatchEvent(new CustomEvent('windowClosed', { detail: winEl.id }));
+                }, 250);
+            }
 
-/* 🌌 SIMPLE STARFIELD (NO LAG / NO BUGS) */
-const canvas=document.getElementById("stars");
-const ctx=canvas.getContext("2d");
+            setupWindowInteractions(winEl) {
+                const header = winEl.querySelector('.window-header');
+                const closeBtn = winEl.querySelector('.win-close');
+                const resizeHandle = winEl.querySelector('.window-resize-handle');
+                
+                winEl.addEventListener('pointerdown', () => this.focusWindow(winEl));
 
-let w,h,stars=[];
+                closeBtn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    this.closeWindow(winEl);
+                });
 
-function resize(){
-  w=canvas.width=innerWidth;
-  h=canvas.height=innerHeight;
-}
-resize();
-window.onresize=resize;
+                // Window Drag Element Controls
+                let isDragging = false;
+                let startX, startY, initialLeft, initialTop;
 
-for(let i=0;i<100;i++){
-  stars.push({
-    x:Math.random()*w,
-    y:Math.random()*h,
-    s:Math.random()*1.5
-  });
-}
+                header.addEventListener('pointerdown', (e) => {
+                    if (e.target.classList.contains('win-btn')) return;
+                    isDragging = true;
+                    startX = e.clientX;
+                    startY = e.clientY;
+                    initialLeft = parseInt(winEl.style.left) || 0;
+                    initialTop = parseInt(winEl.style.top) || 0;
+                    header.setPointerCapture(e.pointerId);
+                });
 
-function draw(){
-  ctx.clearRect(0,0,w,h);
-  ctx.fillStyle="white";
+                header.addEventListener('pointermove', (e) => {
+                    if (!isDragging) return;
+                    const dx = e.clientX - startX;
+                    const dy = e.clientY - startY;
+                    winEl.style.left = `${initialLeft + dx}px`;
+                    winEl.style.top = `${initialTop + dy}px`;
+                });
 
-  for(let s of stars){
-    s.y += s.s;
-    if(s.y>h) s.y=0;
-    ctx.fillRect(s.x,s.y,2,2);
-  }
+                header.addEventListener('pointerup', (e) => {
+                    isDragging = false;
+                    try { header.releasePointerCapture(e.pointerId); } catch(err) {}
+                });
 
-  requestAnimationFrame(draw);
-}
-draw();
+                // Window Corner Resize Engine 
+                let isResizing = false;
+                let startW, startH;
 
-</script>
+                resizeHandle.addEventListener('pointerdown', (e) => {
+                    e.stopPropagation();
+                    e.preventDefault();
+                    isResizing = true;
+                    startX = e.clientX;
+                    startY = e.clientY;
+                    startW = winEl.offsetWidth;
+                    startH = winEl.offsetHeight;
+                    resizeHandle.setPointerCapture(e.pointerId);
+                });
 
+                resizeHandle.addEventListener('pointermove', (e) => {
+                    if (!isResizing) return;
+                    const nw = startW + (e.clientX - startX);
+                    const nh = startH + (e.clientY - startY);
+                    if (nw > 350) winEl.style.width = `${nw}px`;
+                    if (nh > 200) winEl.style.height = `${nh}px`;
+                });
+
+                resizeHandle.addEventListener('pointerup', (e) => {
+                    isResizing = false;
+                    try { resizeHandle.releasePointerCapture(e.pointerId); } catch(err) {}
+                });
+            }
+        }
+
+        /* Toast Push Engine Notification Center Controller */
+        function pushNotification(title, message) {
+            const container = document.getElementById('notification-center');
+            const toast = document.createElement('div');
+            toast.className = 'toast glassmorphism';
+            
+            const timeStr = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+            
+            toast.innerHTML = `
+                <div class="toast-title"><span>${title}</span><span class="toast-time">${timeStr}</span></div>
+                <div class="toast-body">${message}</div>
+            `;
+            container.appendChild(toast);
+            
+            setTimeout(() => toast.classList.add('show'), 50);
+            
+            setTimeout(() => {
+                toast.classList.remove('show');
+                setTimeout(() => toast.remove(), 400);
+            }, 4500);
+        }
+
+        /* Native Application Target Initializers Assembly */
+        function renderProxyApp(wm) {
+            const html = `
+                <div class="proxy-container">
+                    <div class="proxy-bar">
+                        <div class="proxy-tabs">
+                            <div class="proxy-tab active">New Tab</div>
+                            <div class="proxy-tab">+</div>
+                        </div>
+                        <div class="proxy-input-wrapper">
+                            <input type="text" class="proxy-input" value="https://proxy.lyric.internal/gateway" readonly>
+                        </div>
+                    </div>
+                    <div style="flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:12px; background:#0b0b0d;">
+                        <span style="font-size:2.5rem;">🌐</span>
+                        <div style="font-weight:600; font-size:1rem; color:var(--text-primary);">Lyric OS Proxy Sandbox Engine</div>
+                        <div style="font-size:0.8rem; color:var(--text-muted); text-align:center; max-width:320px;">Isolated secure gateway proxy container interface routing is functional. Ready for multi-tab request pipeline assignment.</div>
+                    </div>
+                </div>
+            `;
+            wm.createWindow('proxy', 'Lyric Proxy Browser', html);
+        }
+
+        function renderArcadeApp(wm) {
+            let cardsHTML = '';
+            LyricOSState.games.forEach(g => {
+                cardsHTML += `
+                    <div class="game-card" onclick="executeSystemGame('${g.title}')">
+                        <div class="game-thumb">${g.icon}</div>
+                        <div class="game-title">${g.title}</div>
+                        <div class="game-genre">${g.genre}</div>
+                    </div>
+                `;
+            });
+
+            const html = `
+                <div class="app-container">
+                    <div class="app-sidebar">
+                        <button class="sidebar-btn active">All Games</button>
+                        <button class="sidebar-btn">Favorites</button>
+                        <button class="sidebar-btn">Recently Played</button>
+                    </div>
+                    <div class="app-body">
+                        <div class="arcade-header">
+                            <h2 style="font-weight:600; font-size:1.2rem;">Arcade Platform Catalog</h2>
+                            <input type="text" class="search-bar" placeholder="Search games index...">
+                        </div>
+                        <div class="game-grid" id="arcade-catalog-grid">${cardsHTML}</div>
+                    </div>
+                </div>
+            `;
+            wm.createWindow('arcade', 'Arcade Application Environment', html);
+        }
+
+        function executeSystemGame(title) {
+            pushNotification('Arcade Engine', `Launching sandbox module execution for: ${title}`);
+        }
+
+        function renderAdminApp(wm) {
+            let logLines = '';
+            LyricOSState.logs.forEach(l => logLines += `<div>&gt; ${l}</div>`);
+
+            let gameTableRows = '';
+            LyricOSState.games.forEach(g => {
+                gameTableRows += `<tr id="row-${g.id}"><td>${g.icon}</td><td>${g.title}</td><td>${g.genre}</td><td><span style="color:var(--accent-red); cursor:pointer; font-weight:600;" onclick="deleteGameFromAdmin('${g.id}')">Remove</span></td></tr>`;
+            });
+
+            const html = `
+                <div class="app-container">
+                    <div class="app-sidebar">
+                        <button class="sidebar-btn active" onclick="switchAdminTab('dash')">Dashboard</button>
+                        <button class="sidebar-btn" onclick="switchAdminTab('games')">Game Uploads</button>
+                        <button class="sidebar-btn" onclick="switchAdminTab('announcements')">Broadcasts</button>
+                    </div>
+                    <div class="app-body">
+                        <div id="admin-view-dash" class="admin-pane-view active">
+                            <div class="stat-banner">
+                                <div class="stat-card"><div class="stat-lbl">Active Users</div><div class="stat-val" id="stat-users">${LyricOSState.activeUsersCount}</div></div>
+                                <div class="stat-card"><div class="stat-lbl">Registered Assets</div><div class="stat-val" id="stat-games-count">${LyricOSState.games.length}</div></div>
+                                <div class="stat-card"><div class="stat-lbl">Core Overhead</div><div class="stat-val">${LyricOSState.totalMemoryAlloc}</div></div>
+                            </div>
+                            <h3 style="font-size:0.9rem; margin-bottom:10px; font-weight:700; color:var(--text-secondary); letter-spacing:0.02em;">ADMINISTRATOR SYSTEM LINE INTERFACE</h3>
+                            <div class="terminal-shell">
+                                <div class="terminal-logs" id="admin-term-logs">${logLines}</div>
+                                <div class="terminal-input-row">
+                                    <span class="terminal-prompt">lyric-os#</span>
+                                    <input type="text" class="terminal-input" placeholder="Type /help for system core commands..." onkeydown="handleAdminTerminalInput(event)">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div id="admin-view-games" class="admin-pane-view">
+                            <h3 style="font-size:1.1rem; margin-bottom:6px; font-weight:600;">Register HTML Asset Module Package</h3>
+                            <p style="font-size:0.8rem; color:var(--text-muted); margin-bottom:20px;">Direct package injection bypass routine adds assets dynamically to Arcade Hub catalog viewports.</p>
+                            <div style="max-width:400px; margin-bottom:30px;">
+                                <div class="admin-form-group"><label>Asset Custom Title</label><input type="text" id="add-game-title" class="admin-input" placeholder="e.g. Star Sector Alpha"></div>
+                                <div class="admin-form-group"><label>Genre Definition Tag</label><input type="text" id="add-game-genre" class="admin-input" placeholder="e.g. Simulator"></div>
+                                <div class="admin-form-group"><label>Visual Display Emoji Representation</label><input type="text" id="add-game-icon" class="admin-input" placeholder="e.g. 🚀"></div>
+                                <button class="admin-btn" onclick="injectGameViaForm()">Deploy Asset Package</button>
+                            </div>
+                            <h4 style="font-size:0.9rem; font-weight:700; margin-bottom:10px; color:var(--text-secondary);">CURRENT MANAGED SYSTEM GAME MODULES</h4>
+                            <table class="system-table"><thead style="background:var(--bg-graphite-dark);"><tr><th></th><th>Module ID Name</th><th>Category Tag</th><th>Action</th></tr></thead><tbody id="admin-game-table-body">${gameTableRows}</tbody></table>
+                        </div>
+
+                        <div id="admin-view-announcements" class="admin-pane-view">
+                            <h3 style="font-size:1.1rem; margin-bottom:6px; font-weight:600;">System Wide Announcements</h3>
+                            <p style="font-size:0.8rem; color:var(--text-muted); margin-bottom:20px;">Pushes verified real-time notice center banner cards out to active layout endpoints.</p>
+                            <div style="max-width:500px;">
+                                <div class="admin-form-group"><label>Broadcast Notice String Payload</label><input type="text" id="announce-text-input" class="admin-input" placeholder="Enter declaration text parameter payload..."></div>
+                                <button class="admin-btn" onclick="submitAnnouncementForm()">Broadcast Core Notice</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            wm.createWindow('admin', 'Admin Control Center - Kernel Build v4.2', html);
+        }
+
+        /* Admin Tab View Routing Handler Switch */
+        function switchAdminTab(targetViewKey) {
+            const btns = document.querySelectorAll('.app-sidebar .sidebar-btn');
+            btns.forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+
+            const views = document.querySelectorAll('.admin-pane-view');
+            views.forEach(v => v.classList.remove('active'));
+            document.getElementById(`admin-view-${targetViewKey}`).classList.add('active');
+        }
+
+        /* Command Line Processing Engine Internals */
+        function handleAdminTerminalInput(e) {
+            if (e.key !== 'Enter') return;
+            const inputField = e.target;
+            const cmdText = inputField.value.trim();
+            if (!cmdText) return;
+
+            inputField.value = '';
+            appendLogOutput(`lyric-os# ${cmdText}`);
+
+            // Command Interpreter Pipeline Router Execution Block
+            if (cmdText.startsWith('/help')) {
+                appendLogOutput('Available System Core Operations API Reference:');
+                appendLogOutput('  /announce [msg] - Fires global network visual warning toasts.');
+                appendLogOutput('  /addgame [name] [genre] [emoji] - Directly registers new game profile assets.');
+                appendLogOutput('  /sysstat        - Forces runtime matrix metrics stack printout.');
+                appendLogOutput('  /clear          - Resets the visual active buffer canvas logs.');
+            } else if (cmdText.startsWith('/announce ')) {
+                const text = cmdText.replace('/announce ', '');
+                LyricOSState.announcements.push(text);
+                pushNotification('SYSTEM BROADCAST', text);
+                appendLogOutput('Announcement string dispatched to live listener buffers.');
+            } else if (cmdText.startsWith('/addgame ')) {
+                const elements = cmdText.replace('/addgame ', '').split(' ');
+                if(elements.length < 3) {
+                    appendLogOutput('Syntax error. Validation profile rule requires format: /addgame [Name] [Genre] [Emoji]');
+                    return;
+                }
+                const newG = { id: 'g_' + Date.now(), title: elements[0], genre: elements[1], icon: elements[2] };
+                registerGameGlobalState(newG);
+                appendLogOutput(`Module asset successfully registered: ${newG.title}`);
+            } else if (cmdText === '/sysstat') {
+                appendLogOutput(`--- CORE MATRIX STATE ---`);
+                appendLogOutput(`Memory Overhead: ${LyricOSState.totalMemoryAlloc}`);
+                appendLogOutput(`Registered Assets Index Count: ${LyricOSState.games.length}`);
+                appendLogOutput(`Active Virtual PIDs: ${LyricOSState.activeUsersCount}`);
+            } else if (cmdText === '/clear') {
+                document.getElementById('admin-term-logs').innerHTML = '';
+            } else {
+                appendLogOutput(`Command parsing validation fault error: "${cmdText}" unknown. Type /help for options.`);
+            }
+        }
+
+        function appendLogOutput(str) {
+            const container = document.getElementById('admin-term-logs');
+            if(!container) return;
+            LyricOSState.logs.push(str);
+            const line = document.createElement('div');
+            line.innerHTML = `&gt; ${str}`;
+            container.appendChild(line);
+            container.scrollTop = container.scrollHeight;
+        }
+
+        /* Shared Mutator Functions for Forms and Core States Synchronizer */
+        function registerGameGlobalState(gameObject) {
+            LyricOSState.games.push(gameObject);
+            
+            // Re-render UI component states if windows are currently open
+            const grid = document.getElementById('arcade-catalog-grid');
+            if (grid) {
+                const card = document.createElement('div');
+                card.className = 'game-card';
+                card.setAttribute('onclick', `executeSystemGame('${gameObject.title}')`);
+                card.innerHTML = `<div class="game-thumb">${gameObject.icon}</div><div class="game-title">${gameObject.title}</div><div class="game-genre">${gameObject.genre}</div>`;
+                grid.appendChild(card);
+            }
+
+            const table = document.getElementById('admin-game-table-body');
+            if (table) {
+                const row = document.createElement('tr');
+                row.id = `row-${gameObject.id}`;
+                row.innerHTML = `<td>${gameObject.icon}</td><td>${gameObject.title}</td><td>${gameObject.genre}</td><td><span style="color:var(--accent-red); cursor:pointer; font-weight:600;" onclick="deleteGameFromAdmin('${gameObject.id}')">Remove</span></td>`;
+                table.appendChild(row);
+            }
+
+            const statGamesCount = document.getElementById('stat-games-count');
+            if(statGamesCount) statGamesCount.textContent = LyricOSState.games.length;
+            
+            pushNotification('Admin Action', `Injected Asset Package Module: ${gameObject.title}`);
+        }
+
+        function injectGameViaForm() {
+            const titleIn = document.getElementById('add-game-title');
+            const genreIn = document.getElementById('add-game-genre');
+            const iconIn = document.getElementById('add-game-icon');
+
+            if(!titleIn.value || !genreIn.value) {
+                alert('Invalid payload validation submission. Data cannot be null.');
+                return;
+            }
+
+            const newG = {
+                id: 'g_' + Date.now(),
+                title: titleIn.value,
+                genre: genreIn.value,
+                icon: iconIn.value || '🎮'
+            };
+
+            registerGameGlobalState(newG);
+            
+            titleIn.value = '';
+            genreIn.value = '';
+            iconIn.value = '';
+        }
+
+        function deleteGameFromAdmin(id) {
+            LyricOSState.games = LyricOSState.games.filter(g => g.id !== id);
+            
+            const row = document.getElementById(`row-${id}`);
+            if(row) row.remove();
+            
+            // Force dynamic sync updates down back to Arcade interface layers
+            const grid = document.getElementById('arcade-catalog-grid');
+            if(grid) {
+                let cardsHTML = '';
+                LyricOSState.games.forEach(g => {
+                    cardsHTML += `<div class="game-card" onclick="executeSystemGame('${g.title}')"><div class="game-thumb">${g.icon}</div><div class="game-title">${g.title}</div><div class="game-genre">${g.genre}</div></div>`;
+                });
+                grid.innerHTML = cardsHTML;
+            }
+            
+            const statGamesCount = document.getElementById('stat-games-count');
+            if(statGamesCount) statGamesCount.textContent = LyricOSState.games.length;
+            
+            pushNotification('Admin Alteration', `Purged module structural registration for component ID: ${id}`);
+        }
+
+        function submitAnnouncementForm() {
+            const input = document.getElementById('announce-text-input');
+            if(!input.value.trim()) return;
+            
+            const txt = input.value.trim();
+            LyricOSState.announcements.push(txt);
+            pushNotification('SYSTEM BROADCAST', txt);
+            input.value = '';
+        }
+
+        /* ==========================================================================
+           9. DOCK CONTROLLER FRAMEWORK INITIALIZATION LOGIC
+           ========================================================================== */
+        function initDockEngine(wm) {
+            const dockItems = document.querySelectorAll('.dock-item');
+            const uiAudio = document.getElementById('snd-ui');
+
+            dockItems.forEach(item => {
+                item.addEventListener('click', () => {
+                    const appKey = item.getAttribute('data-app');
+                    if (!appKey) return;
+
+                    item.classList.add('dock-bounce', 'running');
+                    try { uiAudio.currentTime = 0; uiAudio.play().catch(()=>{}); } catch(e){}
+
+                    setTimeout(() => item.classList.remove('dock-bounce'), 450);
+
+                    // Native Router App Selector Map Execution
+                    if (appKey === 'proxy') renderProxyApp(wm);
+                    if (appKey === 'arcade') renderArcadeApp(wm);
+                    if (appKey === 'admin') renderAdminApp(wm);
+                });
+            });
+
+            document.addEventListener('windowClosed', (e) => {
+                const idStr = e.detail.replace('win-', '');
+                const targetDock = document.querySelector(`.dock-item[data-app="${idStr}"]`);
+                if (targetDock) targetDock.classList.remove('running');
+            });
+        }
+
+        /* ==========================================================================
+           10. MASTER KERNEL SEQUENCE CONTROL INIT LAYER PIPELINES
+           ========================================================================== */
+        document.addEventListener('DOMContentLoaded', () => {
+            const wm = new WindowManager();
+            initSystemClock();
+
+            let enterKeyPressCount = 0;
+            let enterKeyTimeout;
+
+            // Step 1: Initialize System Progress Animation Bar Sequence
+            const bootFill = document.querySelector('.progress-bar-fill');
+            const bootAudio = document.getElementById('snd-boot');
+
+            document.body.addEventListener('click', () => {
+                if (bootAudio.paused && document.getElementById('boot-screen').classList.contains('active')) {
+                    bootAudio.play().catch(() => {});
+                }
+            }, { once: true });
+
+            setTimeout(() => { bootFill.style.width = '100%'; }, 100);
+
+            // Transition from Step 1 to Step 2
+            setTimeout(() => {
+                transitionLayer('boot-screen', 'video-screen');
+                runIntroVideoPlayerEngine();
+            }, 2500);
+
+            function runIntroVideoPlayerEngine() {
+                const video = document.getElementById('intro-video');
+                
+                // Fallback auto-advance execution pathway verification
+                if (!video.src || video.src === window.location.href) {
+                    setTimeout(skipIntroVideoSequence, 1200);
+                    return;
+                }
+
+                video.play().catch(() => { skipIntroVideoSequence(); });
+                video.onended = () => skipIntroVideoSequence();
+                window.addEventListener('keydown', handleVideoKeyboardEscapeIntercept);
+            }
+
+            function handleVideoKeyboardEscapeIntercept(e) {
+                if (e.key === 'Enter') {
+                    enterKeyPressCount++;
+                    if (enterKeyPressCount === 1) {
+                        enterKeyTimeout = setTimeout(() => { enterKeyPressCount = 0; }, 1000);
+                    } else if (enterKeyPressCount === 2) {
+                        clearTimeout(enterKeyTimeout);
+                        window.removeEventListener('keydown', handleVideoKeyboardEscapeIntercept);
+                        skipIntroVideoSequence();
+                    }
+                }
+            }
+
+            function skipIntroVideoSequence() {
+                const video = document.getElementById('intro-video');
+                try { video.pause(); } catch(err) {}
+                transitionLayer('video-screen', 'login-screen');
+            }
+
+            // Step 3: Setup Interactive Secure Admin Authorization Subsystem
+            const loginForm = document.getElementById('login-form');
+            loginForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                transitionLayer('login-screen', 'desktop-screen');
+                
+                // Active Application Interface Framework Launch Setup Trigger
+                initDockEngine(wm);
+                
+                setTimeout(() => {
+                    pushNotification('Lyric OS Core', 'Secure Kernel Workspace initial configuration load complete.');
+                }, 1000);
+            });
+
+            function transitionLayer(hideId, showId) {
+                const hideEl = document.getElementById(hideId);
+                const showEl = document.getElementById(showId);
+                
+                hideEl.style.opacity = '0';
+                hideEl.style.transform = 'scale(0.97)';
+                
+                setTimeout(() => {
+                    hideEl.classList.remove('active');
+                    showEl.classList.add('active');
+                    setTimeout(() => { 
+                        showEl.style.opacity = '1'; 
+                    }, 50);
+                }, 600);
+            }
+
+            function initSystemClock() {
+                const clockEl = document.getElementById('live-clock');
+                const dateEl = document.getElementById('live-date');
+                
+                function update() {
+                    const now = new Date();
+                    clockEl.textContent = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                    dateEl.textContent = now.toLocaleDateString([], { weekday: 'short', month: 'short', day: 'numeric' });
+                }
+                setInterval(update, 60000);
+                update();
+            }
+        });
+    </script>
 </body>
 </html>
